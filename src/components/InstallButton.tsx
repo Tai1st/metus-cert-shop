@@ -16,7 +16,7 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * Nút "Cài đặt": tự lấy chứng chỉ khách đã mua và ký app của shop trên server (không cần khách
  * tự tải chứng chỉ rồi vào trang Ký IPA), xong thì mở thẳng liên kết cài đặt trên Safari.
  */
-export default function InstallButton() {
+export default function InstallButton({ endpoint = '/app/install' }: { endpoint?: string }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
@@ -28,7 +28,7 @@ export default function InstallButton() {
     setReady(null);
     setMsg('Đang chuẩn bị chứng chỉ…');
 
-    const start = await post<{ jobId: string }>('/app/install');
+    const start = await post<{ jobId: string }>(endpoint);
     if (!start.ok) {
       setBusy(false);
       setMsg('');
