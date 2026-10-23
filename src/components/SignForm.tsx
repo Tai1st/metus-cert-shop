@@ -35,7 +35,10 @@ const label = 'mb-2 block text-[11px] font-semibold';
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Ảnh cho app ký nhanh đã biết trước; slug khác (admin thêm sau) dùng chữ cái đầu làm biểu tượng.
-const QUICK_APP_ICONS: Record<string, string> = { esign: '/images/apps/esign.webp' };
+const QUICK_APP_ICONS: Record<string, string> = {
+  metus: '/images/apps/metus.webp',
+  esign: '/images/apps/esign.webp',
+};
 
 export default function SignForm({ status, quickApps }: { status: Status; quickApps: QuickApp[] }) {
   const ipaRef = useRef<HTMLInputElement>(null);

@@ -16,7 +16,10 @@ interface AppItem {
 }
 
 // Ảnh cho app ký nhanh đã biết trước; app khác (admin thêm sau) dùng chữ cái đầu làm biểu tượng.
-const QUICK_APP_ICONS: Record<string, string> = { esign: '/images/apps/esign.webp' };
+const QUICK_APP_ICONS: Record<string, string> = {
+  metus: '/images/apps/metus.webp',
+  esign: '/images/apps/esign.webp',
+};
 
 export default async function AppsPage() {
   const [user, apps] = await Promise.all([getMe(), be<{ items: AppItem[] }>('/apps')]);
