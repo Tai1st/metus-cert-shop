@@ -14,7 +14,7 @@ export default async function AdminSettingsPage() {
     <div className="mx-auto max-w-2xl space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">Cài đặt shop</h1>
-        <Link href="/admin" className="text-sm text-indigo-600 hover:underline">
+        <Link href="/admin" className="text-sm text-accent hover:underline">
           ← Quản lý đơn
         </Link>
       </div>

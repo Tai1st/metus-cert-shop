@@ -80,14 +80,14 @@ export default async function AdminPage({ searchParams }: PageProps<'/admin'>) {
       )}
 
       <div className="flex flex-wrap gap-2 text-xs">
-        <Link href="/admin" className={`rounded-full border px-3 py-1 ${!status ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 bg-white'}`}>
+        <Link href="/admin" className={`rounded-full border px-3 py-1 ${!status ? 'border-accent bg-tint text-accent' : 'border-slate-200 bg-white'}`}>
           Tất cả{s ? ` (${s.totalOrders})` : ''}
         </Link>
         {Object.entries(STATUS_LABEL).map(([k, v]) => (
           <Link
             key={k}
             href={`/admin?status=${k}`}
-            className={`rounded-full border px-3 py-1 ${status === k ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 bg-white'}`}
+            className={`rounded-full border px-3 py-1 ${status === k ? 'border-accent bg-tint text-accent' : 'border-slate-200 bg-white'}`}
           >
             {v.text}
             {s?.counts[k] ? ` (${s.counts[k]})` : ''}
@@ -103,7 +103,7 @@ export default async function AdminPage({ searchParams }: PageProps<'/admin'>) {
           placeholder="Tìm mã đơn, UDID, tên đăng nhập..."
           className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
         />
-        <button className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">Tìm</button>
+        <button className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white">Tìm</button>
       </form>
 
       {items.length === 0 && <p className="text-sm text-slate-500">Không có đơn nào.</p>}

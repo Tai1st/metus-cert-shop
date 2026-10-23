@@ -26,7 +26,7 @@ export default async function OrdersPage() {
         <Link
           key={o.code}
           href={`/orders/${o.code}`}
-          className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 text-sm hover:border-indigo-300"
+          className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 text-sm hover:border-accent"
         >
           <div>
             <div className="font-medium">

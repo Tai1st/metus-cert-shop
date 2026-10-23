@@ -34,7 +34,7 @@ export default function OrderActions({ code, status, hasProvider }: { code: stri
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
-        <a href={`/api/cert-shop/orders/${code}/download`} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">
+        <a href={`/api/cert-shop/orders/${code}/download`} className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white">
           Tải chứng chỉ (.zip)
         </a>
         {hasProvider && (

@@ -37,7 +37,7 @@ export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
         className={input}
       />
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button disabled={loading} className="w-full rounded-lg bg-indigo-600 py-2 text-sm font-medium text-white disabled:opacity-60">
+      <button disabled={loading} className="w-full rounded-lg bg-ink py-2 text-sm font-medium text-white disabled:opacity-60">
         {loading ? 'Đang xử lý...' : mode === 'login' ? 'Đăng nhập' : 'Tạo tài khoản'}
       </button>
     </form>

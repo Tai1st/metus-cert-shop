@@ -41,6 +41,8 @@ export interface Plan {
   receiveTime: string;
   validity: string;
   warranty: string;
+  /** Dòng mô tả quyền lợi (cấu hình ở BE); bản BE cũ chưa có thì FE dùng mặc định. */
+  features?: string[];
   price: number;
   currency: string;
 }

@@ -11,6 +11,7 @@ export interface ShopSettingsView {
   bankAccountName: string;
   priceMarkup: number;
   priceRoundTo: number;
+  planFeatures: string[];
   chungchiBaseUrl: string;
   hasApiKey: boolean;
   apiKeyHint: string;
@@ -37,6 +38,8 @@ export default function SettingsForm({ initial }: { initial: ShopSettingsView })
     if (!f.webhookSecret) delete body.webhookSecret;
     body.priceMarkup = Number(f.priceMarkup);
     body.priceRoundTo = Number(f.priceRoundTo);
+    // Mỗi dòng một ý; để trống = dùng mô tả mặc định
+    body.planFeatures = (f.planFeatures || '').split(/\r?\n/);
     const r = await put('/admin/settings', body);
     setBusy(false);
     if (!r.ok) return setError(r.error);
@@ -67,6 +70,12 @@ export default function SettingsForm({ initial }: { initial: ShopSettingsView })
         </Field>
       </Section>
 
+      <Section title="Mô tả quyền lợi trên thẻ gói">
+        <Field label="Mỗi dòng một ý, hiển thị dưới thông tin hạn dùng và bảo hành (để trống = mặc định)">
+          <textarea name="planFeatures" rows={5} defaultValue={initial.planFeatures.join('\n')} className={input} />
+        </Field>
+      </Section>
+
       <Section title="Nhà cung cấp chungchi.store">
         <Field label="Địa chỉ API">
           <input name="chungchiBaseUrl" defaultValue={initial.chungchiBaseUrl} className={input} />
@@ -89,7 +98,7 @@ export default function SettingsForm({ initial }: { initial: ShopSettingsView })
 
       {error && <p className="text-sm text-red-600">{error}</p>}
       {msg && <p className="text-sm text-green-700">{msg}</p>}
-      <button disabled={busy} className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-60">
+      <button disabled={busy} className="rounded-lg bg-ink px-5 py-2.5 text-sm font-medium text-white disabled:opacity-60">
         {busy ? 'Đang lưu...' : 'Lưu cấu hình'}
       </button>
     </form>
