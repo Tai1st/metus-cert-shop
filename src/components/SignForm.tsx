@@ -181,8 +181,8 @@ export default function SignForm({ status, quickApps }: { status: Status; quickA
                   setIpaName('');
                   if (ipaRef.current) ipaRef.current.value = '';
                 }}
-                className={`flex min-h-[90px] flex-col items-center justify-center gap-2 rounded-[13px] bg-white p-2.5 text-[9px] text-[#80956c] shadow-[0_4px_12px_#25351b03] disabled:opacity-60 ${
-                  source === a.slug ? 'bg-[#f2f8e9] shadow-[0_0_0_2px_#dcebc729]' : ''
+                className={`flex min-h-[90px] flex-col items-center justify-center gap-2 rounded-[13px] border-2 bg-white p-2.5 text-[9px] text-[#80956c] shadow-[0_4px_12px_#25351b03] disabled:opacity-60 ${
+                  source === a.slug ? 'border-lime-dark bg-[#f2f8e9]' : 'border-transparent'
                 }`}
               >
                 {QUICK_APP_ICONS[a.slug] ? (
@@ -201,8 +201,8 @@ export default function SignForm({ status, quickApps }: { status: Status; quickA
               disabled={busy}
               aria-pressed={source === ''}
               onClick={pickOwnFile}
-              className={`flex min-h-[90px] flex-col items-center justify-center gap-2 rounded-[13px] bg-white p-2.5 text-[9px] text-[#80956c] shadow-[0_4px_12px_#25351b03] disabled:opacity-60 ${
-                source === '' ? 'bg-[#f2f8e9] shadow-[0_0_0_2px_#dcebc729]' : ''
+              className={`flex min-h-[90px] flex-col items-center justify-center gap-2 rounded-[13px] border-2 bg-white p-2.5 text-[9px] text-[#80956c] shadow-[0_4px_12px_#25351b03] disabled:opacity-60 ${
+                source === '' ? 'border-lime-dark bg-[#f2f8e9]' : 'border-transparent'
               }`}
             >
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#f0f3ed] text-xl text-[#8a9e79]">⇪</span>
