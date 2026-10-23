@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { post } from '@/lib/client';
+import { useI18n } from '@/lib/i18n';
 
 const PENDING = ['awaiting_payment', 'paid', 'provisioning'];
 
 export default function OrderActions({ code, status, hasProvider }: { code: string; status: string; hasProvider: boolean }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -35,23 +37,19 @@ export default function OrderActions({ code, status, hasProvider }: { code: stri
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         <a href={`/api/cert-shop/orders/${code}/download`} className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white">
-          Tải chứng chỉ (.zip)
+          {t('orderDetail.downloadCert')}
         </a>
         {hasProvider && (
           <>
             <button
               disabled={busy}
               className={btn}
-              onClick={() => run('check', (d) => (d.valid ? 'Chứng chỉ hợp lệ' : `Chứng chỉ có vấn đề: ${d.message || d.status}`))}
+              onClick={() => run('check', (d) => (d.valid ? t('orderDetail.certValid') : t('orderDetail.certIssue', { msg: String(d.message || d.status) })))}
             >
-              Kiểm tra chứng chỉ
+              {t('workspace.navCheck')}
             </button>
-            <button
-              disabled={busy}
-              className={btn}
-              onClick={() => run('warranty', (d) => String(d.message || 'Đã gửi yêu cầu bảo hành'))}
-            >
-              Yêu cầu bảo hành
+            <button disabled={busy} className={btn} onClick={() => run('warranty', (d) => String(d.message || t('orderDetail.warrantySent')))}>
+              {t('orderDetail.requestWarranty')}
             </button>
           </>
         )}

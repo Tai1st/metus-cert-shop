@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
 import { be, getMe } from '@/lib/api';
 import OrdersTable from '@/components/OrdersTable';
-import { BtnLink, Card, PageHead } from '@/components/ui';
+import OrdersPageHead from '@/components/OrdersPageHead';
+import { Card } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,11 +23,7 @@ export default async function OrdersPage() {
 
   return (
     <div>
-      <PageHead
-        title="Đơn hàng của tôi"
-        sub="Theo dõi chứng chỉ, thanh toán và tiến trình cài đặt."
-        action={<BtnLink href="/#install">+ &nbsp; Tạo đơn mới</BtnLink>}
-      />
+      <OrdersPageHead />
       <Card>
         <OrdersTable orders={orders} />
       </Card>

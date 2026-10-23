@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { Badge } from './ui';
 import { Use } from './IconSprite';
+import { useI18n } from '@/lib/i18n';
 
 interface OrderRow {
   code: string;
@@ -15,15 +16,15 @@ interface OrderRow {
   createdAt: string;
 }
 
-const FILTERS = [
-  ['all', 'Tất cả'],
-  ['awaiting_payment', 'Chờ thanh toán'],
-  ['completed', 'Hoạt động'],
-  ['provisioning', 'Đang xử lý'],
-] as const;
-
 /** Bảng đơn hàng có tìm kiếm và lọc trạng thái, lọc ngay trên dữ liệu đã tải (số đơn của một khách thường không nhiều). */
 export default function OrdersTable({ orders }: { orders: OrderRow[] }) {
+  const { t } = useI18n();
+  const FILTERS = [
+    ['all', t('orders.filterAll')],
+    ['awaiting_payment', t('common.status.awaiting_payment')],
+    ['completed', t('common.status.completed')],
+    ['provisioning', t('orders.filterProcessing')],
+  ] as const;
   const [filter, setFilter] = useState<(typeof FILTERS)[number][0]>('all');
   const [query, setQuery] = useState('');
 
@@ -45,8 +46,8 @@ export default function OrdersTable({ orders }: { orders: OrderRow[] }) {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Tìm mã đơn, tên gói hoặc thiết bị…"
-            aria-label="Tìm đơn hàng"
+            placeholder={t('orders.searchPlaceholder')}
+            aria-label={t('workspace.navLookup')}
             className="min-h-[43px] w-full rounded-lg border border-line bg-gradient-to-b from-[#fafbf8] to-[#f4f6ef] py-3 pl-9 pr-3 text-[10px] outline-none focus:border-[#9cba72]"
           />
         </div>
@@ -65,13 +66,13 @@ export default function OrdersTable({ orders }: { orders: OrderRow[] }) {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="py-9 text-center text-[11px] text-muted">Không tìm thấy đơn hàng phù hợp.</p>
+        <p className="py-9 text-center text-[11px] text-muted">{t('orders.noMatch')}</p>
       ) : (
         <div className="overflow-auto">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr>
-                {['MÃ ĐƠN / NGÀY TẠO', 'GÓI / THIẾT BỊ', 'THANH TOÁN', 'TRẠNG THÁI', ''].map((h) => (
+                {[t('orders.colCode'), t('orders.colPlan'), t('orders.colPayment'), t('orders.colStatus'), ''].map((h) => (
                   <th key={h} className="whitespace-nowrap bg-[#f8faf5] px-[15px] py-[13px] text-[8px] font-medium tracking-wide text-[#a0aa94]">
                     {h}
                   </th>
@@ -97,7 +98,7 @@ export default function OrdersTable({ orders }: { orders: OrderRow[] }) {
                   </td>
                   <td className="whitespace-nowrap px-[15px] py-[19px] text-[10px]">
                     <Link href={`/orders/${o.code}`} className="inline-flex rounded-lg border border-line bg-white px-2.5 py-1.5 text-[9px] text-[#768867] hover:bg-[#f0f6e7]">
-                      Xem chi tiết ↗
+                      {t('orders.viewDetail')}
                     </Link>
                   </td>
                 </tr>
@@ -107,7 +108,7 @@ export default function OrdersTable({ orders }: { orders: OrderRow[] }) {
         </div>
       )}
       <div className="mt-2.5 flex justify-between border-t border-line pt-[18px] text-[8px] text-[#a0ad91]">
-        <span>{filtered.length} đơn hàng</span>
+        <span>{t('orders.count', { n: filtered.length })}</span>
       </div>
     </div>
   );

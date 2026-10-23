@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
+import { useI18n } from '@/lib/i18n';
 
 /* ---------- Hình minh họa các bước (vẽ bằng HTML, đúng tên miền và hồ sơ của shop) ---------- */
 
@@ -38,21 +39,23 @@ function IosDialog({ title, body, actions }: { title?: string; body: string; act
 }
 
 function FakeOrderCard() {
+  const { t } = useI18n();
   return (
     <>
-      <div className="mb-1 font-semibold">UDID thiết bị</div>
-      <div className="mb-1.5 rounded-md border border-[#dfe5de] p-1 text-muted sm:mb-2 sm:p-1.5">Nhập UDID của iPhone / iPad</div>
+      <div className="mb-1 font-semibold">{t('udidGuide.figUdidLabel')}</div>
+      <div className="mb-1.5 rounded-md border border-[#dfe5de] p-1 text-muted sm:mb-2 sm:p-1.5">{t('udidGuide.figUdidPlaceholder')}</div>
       <div className="flex gap-1">
-        <div className={`flex-1 rounded-md bg-ink p-1 text-center text-white sm:p-1.5 ${ring}`}>Lấy UDID ↗</div>
-        <div className="flex-1 rounded-md border border-[#dfe6d7] bg-[#f5f8ef] p-1 text-center text-[#5d7e3d] sm:p-1.5">Hướng dẫn</div>
+        <div className={`flex-1 rounded-md bg-ink p-1 text-center text-white sm:p-1.5 ${ring}`}>{t('udidGuide.figGetUdid')}</div>
+        <div className="flex-1 rounded-md border border-[#dfe6d7] bg-[#f5f8ef] p-1 text-center text-[#5d7e3d] sm:p-1.5">{t('nav.guide')}</div>
       </div>
-      <div className="mt-2 mb-1 font-semibold sm:mt-3">Phương thức thanh toán</div>
-      <div className="rounded-md border border-[#dfe5de] p-1 text-muted sm:p-1.5">Chuyển khoản ngân hàng</div>
+      <div className="mt-2 mb-1 font-semibold sm:mt-3">{t('udidGuide.figPaymentMethod')}</div>
+      <div className="rounded-md border border-[#dfe5de] p-1 text-muted sm:p-1.5">{t('udidGuide.figBankTransfer')}</div>
     </>
   );
 }
 
 function FigureDownload() {
+  const { t } = useI18n();
   return (
     <div className="mt-4 flex gap-1.5 sm:gap-2">
       <Panel>
@@ -61,50 +64,47 @@ function FigureDownload() {
       <Panel dim>
         <FakeOrderCard />
         <IosDialog
-          body="“appstore.metus.vn” đang cố gắng tải về một hồ sơ cấu hình. Bạn có muốn cho phép việc này không?"
-          actions={[{ label: 'Bỏ qua' }, { label: 'Cho phép', hit: true }]}
+          body={t('udidGuide.figAllowDialogBody')}
+          actions={[{ label: t('udidGuide.figSkip') }, { label: t('udidGuide.figAllow'), hit: true }]}
         />
       </Panel>
       <Panel dim>
         <FakeOrderCard />
-        <IosDialog
-          title="Đã tải về hồ sơ"
-          body="Xem lại hồ sơ trong ứng dụng Cài đặt nếu bạn muốn cài đặt hồ sơ."
-          actions={[{ label: 'Đóng', hit: true }]}
-        />
+        <IosDialog title={t('udidGuide.figDownloadedTitle')} body={t('udidGuide.figDownloadedBody')} actions={[{ label: t('common.close'), hit: true }]} />
       </Panel>
     </div>
   );
 }
 
 function FigureInstall() {
+  const { t } = useI18n();
   return (
     <div className="mt-4 flex gap-1.5 sm:gap-2">
       <Panel>
-        <div className="mb-1.5 text-[8px] font-bold sm:mb-2 sm:text-sm">Cài đặt</div>
+        <div className="mb-1.5 text-[8px] font-bold sm:mb-2 sm:text-sm">{t('udidGuide.figSettingsTitle')}</div>
         <div className="space-y-1 sm:space-y-1.5">
-          <div className="rounded-lg bg-[#f2f2f7] p-1 text-muted sm:p-2">Tìm kiếm</div>
+          <div className="rounded-lg bg-[#f2f2f7] p-1 text-muted sm:p-2">{t('udidGuide.figSearch')}</div>
           <div className={`flex items-center justify-between rounded-lg bg-[#f2f2f7] p-1 sm:p-2 ${ring}`}>
-            <span className="font-semibold text-ink">Đã tải về hồ sơ</span>
+            <span className="font-semibold text-ink">{t('udidGuide.figDownloadedTitle')}</span>
             <span className="text-muted">›</span>
           </div>
-          <div className="rounded-lg bg-[#f2f2f7] p-1 sm:p-2">Chung</div>
-          <div className="rounded-lg bg-[#f2f2f7] p-1 sm:p-2">Màn hình &amp; Độ sáng</div>
+          <div className="rounded-lg bg-[#f2f2f7] p-1 sm:p-2">{t('udidGuide.figGeneral')}</div>
+          <div className="rounded-lg bg-[#f2f2f7] p-1 sm:p-2">{t('udidGuide.figDisplayBrightness')}</div>
         </div>
       </Panel>
       <Panel>
         <div className="mb-1.5 flex items-center justify-between text-[6.5px] text-[#007aff] sm:mb-2 sm:text-[10px]">
-          <span>Hủy</span>
-          <span className={`rounded px-1 font-semibold ${ring}`}>Cài đặt</span>
+          <span>{t('udidGuide.figCancel')}</span>
+          <span className={`rounded px-1 font-semibold ${ring}`}>{t('udidGuide.figSettingsTitle')}</span>
         </div>
         <div className="mb-1 text-center sm:mb-1.5">
-          <div className="text-[7.5px] font-bold sm:text-[11px]">Lấy UDID thiết bị</div>
+          <div className="text-[7.5px] font-bold sm:text-[11px]">{t('udidGuide.figGetUdidProfile')}</div>
           <div className="text-muted">Metus</div>
         </div>
         <div className="space-y-1 rounded-lg bg-[#f2f2f7] p-1 sm:p-2">
-          <div className="flex justify-between"><span className="text-muted">Đã ký bởi</span><span className="text-red-600">Chưa được ký</span></div>
-          <div className="flex justify-between"><span className="text-muted">Mô tả</span><span className="max-w-[60%] text-right">Xác định UDID thiết bị</span></div>
-          <div className="flex justify-between"><span className="text-muted">Chứa</span><span>Dịch vụ hồ sơ</span></div>
+          <div className="flex justify-between"><span className="text-muted">{t('udidGuide.figSignedBy')}</span><span className="text-red-600">{t('udidGuide.figUnsigned')}</span></div>
+          <div className="flex justify-between"><span className="text-muted">{t('udidGuide.figDescription')}</span><span className="max-w-[60%] text-right">{t('udidGuide.figDescValue')}</span></div>
+          <div className="flex justify-between"><span className="text-muted">{t('udidGuide.figContains')}</span><span>{t('udidGuide.figProfileService')}</span></div>
         </div>
       </Panel>
     </div>
@@ -112,17 +112,18 @@ function FigureInstall() {
 }
 
 function FigureBack() {
+  const { t } = useI18n();
   return (
     <div className="mt-4 flex gap-1.5 sm:gap-2">
       <Panel>
         <div className="mb-1.5 rounded-full bg-[#f2f2f7] px-2 py-1 text-center text-[#3c3c43] sm:mb-2">🔒 appstore.metus.vn</div>
-        <div className="mb-1 font-semibold">UDID thiết bị</div>
+        <div className="mb-1 font-semibold">{t('udidGuide.figUdidLabel')}</div>
         <div className="mb-1 break-all rounded-md border border-[#dfe5de] bg-[#f7f9f5] p-1 font-mono sm:p-1.5">00008120-000A11223344401E</div>
         <div className="mb-1.5 text-muted sm:mb-2">iPhone15,3 · iOS 22A100</div>
-        <div className="rounded-md bg-mint p-1.5 text-center font-bold text-[#20321a] sm:p-2">Tiếp tục thanh toán →</div>
+        <div className="rounded-md bg-mint p-1.5 text-center font-bold text-[#20321a] sm:p-2">{t('udidGuide.figContinuePayment')}</div>
       </Panel>
       <div className="flex flex-1 items-center rounded-xl border border-dashed border-[#cfd8cc] bg-[#f7f9f5] p-1.5 text-[6.5px] leading-[1.6] text-muted sm:p-3 sm:text-[10px] sm:leading-[1.7]">
-        UDID được điền sẵn. Bạn chỉ cần chọn gói và thanh toán, không phải sao chép thủ công.
+        {t('udidGuide.figAutoFilled')}
       </div>
     </div>
   );
@@ -130,42 +131,6 @@ function FigureBack() {
 
 
 type Step = { t: string; d: ReactNode; fig?: ReactNode };
-
-const IPHONE: Step[] = [
-  {
-    t: 'Tải về hồ sơ',
-    d: (
-      <>
-        Mở trang bằng <b>Safari trên chính iPhone/iPad</b> cần cài app, bấm <b>Lấy UDID</b> rồi chọn <b>Cho phép</b> khi
-        được hỏi tải hồ sơ cấu hình.
-      </>
-    ),
-    fig: <FigureDownload />,
-  },
-  {
-    t: 'Cài đặt hồ sơ',
-    d: (
-      <>
-        Vào <b>Cài đặt</b>, chọn <b>Hồ sơ đã tải về</b> rồi bấm <b>Cài đặt</b>. Nếu không thấy mục này, vào theo đường
-        dẫn:
-        <span className="mt-3 block rounded-[10px] border border-[#e1e8d8] bg-[#f4f7f0] p-3 text-[11px] leading-relaxed text-[#556649]">
-          Cài đặt chung → Quản lý VPN &amp; thiết bị → Lấy UDID thiết bị
-        </span>
-      </>
-    ),
-    fig: <FigureInstall />,
-  },
-  {
-    t: 'Quay lại trang mua hàng',
-    d: (
-      <>
-        Sau khi cài xong, Safari tự mở lại trang này và <b>UDID được điền sẵn</b>, không cần sao chép thủ công. Bạn chỉ
-        cần chọn gói và thanh toán.
-      </>
-    ),
-    fig: <FigureBack />,
-  },
-];
 
 function FigureImg({ src, alt }: { src: string; alt: string }) {
   return (
@@ -176,40 +141,52 @@ function FigureImg({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-const THREEU: Step[] = [
-  {
-    t: 'Kết nối iPhone với 3uTools',
-    d: (
-      <>
-        Cài 3uTools trên máy tính, cắm iPhone bằng cáp USB, mở khóa và chọn <b>Tin cậy máy tính này</b> nếu được hỏi.
-        Khi đã kết nối, bạn có thể xem loại sản phẩm, mã máy, IMEI, số sê-ri, UDID và nhiều thông tin khác.
-      </>
-    ),
-    fig: <FigureImg src="https://dl-image.3u.com/upload/20160930/1475228216405008115.jpg" alt="Xem thông tin cơ bản của iPhone trong 3uTools" />,
-  },
-  {
-    t: 'Cập nhật thông tin thiết bị',
-    d: (
-      <>
-        Nhấn <b>Refresh iDevice Info</b>, rồi <b>View iDevice Details</b> nếu cần xem thêm.
-      </>
-    ),
-    fig: <FigureImg src="https://dl-image.3u.com/upload/20160930/1475228244734042723.jpg" alt="Cập nhật thông tin iPhone trong 3uTools" />,
-  },
-  {
-    t: 'Sao chép toàn bộ UDID',
-    d: (
-      <>
-        Sao chép giá trị <b>UDID</b>, tránh nhầm với số sê-ri, IMEI hay ECID. Lưu ý cách này cần nhập UDID thủ công,
-        nên dùng cách lấy bằng hồ sơ trên iPhone nếu có thể.
-      </>
-    ),
-    fig: <FigureImg src="https://dl-image.3u.com/upload/20160930/1475228269062047404.jpg" alt="Xem thông tin chi tiết của iPhone trong 3uTools" />,
-  },
-];
-
 export default function UdidGuide({ onClose }: { onClose: () => void }) {
+  const { t } = useI18n();
   const [tab, setTab] = useState<'iphone' | '3u'>('iphone');
+
+  const IPHONE: Step[] = [
+    {
+      t: t('udidGuide.iphoneStep1Title'),
+      d: t('udidGuide.iphoneStep1Desc'),
+      fig: <FigureDownload />,
+    },
+    {
+      t: t('udidGuide.iphoneStep2Title'),
+      d: (
+        <>
+          {t('udidGuide.iphoneStep2Desc')}
+          <span className="mt-3 block rounded-[10px] border border-[#e1e8d8] bg-[#f4f7f0] p-3 text-[11px] leading-relaxed text-[#556649]">
+            {t('udidGuide.iphoneStep2Path')}
+          </span>
+        </>
+      ),
+      fig: <FigureInstall />,
+    },
+    {
+      t: t('udidGuide.iphoneStep3Title'),
+      d: t('udidGuide.iphoneStep3Desc'),
+      fig: <FigureBack />,
+    },
+  ];
+
+  const THREEU: Step[] = [
+    {
+      t: t('udidGuide.threeuStep1Title'),
+      d: t('udidGuide.threeuStep1Desc'),
+      fig: <FigureImg src="https://dl-image.3u.com/upload/20160930/1475228216405008115.jpg" alt={t('udidGuide.threeuStep1Title')} />,
+    },
+    {
+      t: t('udidGuide.threeuStep2Title'),
+      d: t('udidGuide.threeuStep2Desc'),
+      fig: <FigureImg src="https://dl-image.3u.com/upload/20160930/1475228244734042723.jpg" alt={t('udidGuide.threeuStep2Title')} />,
+    },
+    {
+      t: t('udidGuide.threeuStep3Title'),
+      d: t('udidGuide.threeuStep3Desc'),
+      fig: <FigureImg src="https://dl-image.3u.com/upload/20160930/1475228269062047404.jpg" alt={t('udidGuide.threeuStep3Title')} />,
+    },
+  ];
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -236,24 +213,24 @@ export default function UdidGuide({ onClose }: { onClose: () => void }) {
       >
         <button
           onClick={onClose}
-          aria-label="Đóng hướng dẫn"
+          aria-label={t('udidGuide.closeGuide')}
           className="absolute right-[18px] top-[15px] h-7 w-7 rounded-full bg-[#f2f5ef] text-[#64715e]"
         >
           ×
         </button>
         <div className="flex items-center gap-2 text-[11px] font-bold tracking-[2px]">
-          <span className="inline-block h-[7px] w-[7px] rounded-full bg-[#87b844]" /> HƯỚNG DẪN THIẾT BỊ
+          <span className="inline-block h-[7px] w-[7px] rounded-full bg-[#87b844]" /> {t('udidGuide.eyebrow')}
         </div>
         <h2 id="udid-guide-title" className="mb-2 mt-2 text-lg font-bold tracking-tight">
-          Lấy UDID của bạn
+          {t('udidGuide.title')}
         </h2>
-        <p className="text-xs leading-relaxed text-muted">Chọn cách phù hợp để lấy mã thiết bị và quay lại hoàn tất đơn hàng.</p>
+        <p className="text-xs leading-relaxed text-muted">{t('udidGuide.subtitle')}</p>
 
-        <div className="my-5 flex rounded-[10px] bg-[#f0f4ec] p-1" role="tablist" aria-label="Cách lấy UDID">
+        <div className="my-5 flex rounded-[10px] bg-[#f0f4ec] p-1" role="tablist" aria-label={t('udidGuide.tabsLabel')}>
           {(
             [
-              ['iphone', 'Trên iPhone'],
-              ['3u', 'Bằng 3uTools'],
+              ['iphone', t('udidGuide.tabIphone')],
+              ['3u', t('udidGuide.tab3u')],
             ] as const
           ).map(([k, label]) => (
             <button
@@ -290,7 +267,7 @@ export default function UdidGuide({ onClose }: { onClose: () => void }) {
             onClick={onClose}
             className="flex w-full items-center justify-center gap-3 rounded-[10px] bg-mint p-[15px] text-xs font-bold text-[#20321a] transition hover:bg-mint-dark"
           >
-            Đã hiểu <span>→</span>
+            {t('udidGuide.gotIt')} <span>→</span>
           </button>
         </div>
       </div>

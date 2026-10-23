@@ -19,7 +19,7 @@ export default function MarketingTopbar({ loggedIn, username }: { loggedIn: bool
   return (
     <div className="sticky top-0 z-[5] border-b border-line bg-paper/95 backdrop-blur-xl">
       <header className="mx-auto flex h-[78px] max-w-[1220px] items-center justify-between gap-3 px-6 sm:h-[88px] sm:px-9">
-        <Link href="/" className="flex items-center gap-2.5 text-[22px] font-extrabold tracking-tight sm:text-[25px]" aria-label="Metus trang chủ">
+        <Link href="/" className="flex items-center gap-2.5 text-[22px] font-extrabold tracking-tight sm:text-[25px]" aria-label={t('nav.homeAriaLabel')}>
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-deep text-[25px] font-extrabold italic leading-none text-lime sm:h-10 sm:w-10 sm:text-[29px]">
             m
           </span>

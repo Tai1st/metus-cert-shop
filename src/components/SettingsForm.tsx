@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { put } from '@/lib/client';
+import { useI18n } from '@/lib/i18n';
 
 export interface ShopSettingsView {
   siteUrl: string;
@@ -22,6 +23,7 @@ const input = 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm';
 
 export default function SettingsForm({ initial }: { initial: ShopSettingsView }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -43,55 +45,53 @@ export default function SettingsForm({ initial }: { initial: ShopSettingsView })
     const r = await put('/admin/settings', body);
     setBusy(false);
     if (!r.ok) return setError(r.error);
-    setMsg('Đã lưu cấu hình');
+    setMsg(t('admin.settingsSaved'));
     router.refresh();
   }
 
   return (
     <form onSubmit={submit} className="space-y-6">
-      <Section title="Thanh toán chuyển khoản (VietQR)">
-        <Field label="Mã ngân hàng (vd: ACB, VCB, MB)">
+      <Section title={t('admin.sectionBankTransfer')}>
+        <Field label={t('admin.fieldBankId')}>
           <input name="bankId" defaultValue={initial.bankId} className={input} />
         </Field>
-        <Field label="Số tài khoản">
+        <Field label={t('admin.fieldAccountNo')}>
           <input name="bankAccountNo" defaultValue={initial.bankAccountNo} className={input} />
         </Field>
-        <Field label="Chủ tài khoản">
+        <Field label={t('admin.fieldAccountName')}>
           <input name="bankAccountName" defaultValue={initial.bankAccountName} className={input} />
         </Field>
       </Section>
 
-      <Section title="Giá bán">
-        <Field label="Hệ số nhân giá gốc (vd: 1.3 = lãi 30%)">
+      <Section title={t('admin.sectionPricing')}>
+        <Field label={t('admin.fieldMarkup')}>
           <input name="priceMarkup" type="number" step="0.01" min="1" max="10" defaultValue={initial.priceMarkup} className={input} />
         </Field>
-        <Field label="Làm tròn lên tới (đ)">
+        <Field label={t('admin.fieldRoundTo')}>
           <input name="priceRoundTo" type="number" min="1" defaultValue={initial.priceRoundTo} className={input} />
         </Field>
       </Section>
 
-      <Section title="Mô tả quyền lợi trên thẻ gói">
-        <Field label="Mỗi dòng một ý, hiển thị dưới thông tin hạn dùng và bảo hành (để trống = mặc định)">
+      <Section title={t('admin.sectionFeatures')}>
+        <Field label={t('admin.fieldFeatures')}>
           <textarea name="planFeatures" rows={5} defaultValue={initial.planFeatures.join('\n')} className={input} />
         </Field>
       </Section>
 
-      <Section title="Nhà cung cấp chungchi.store">
-        <Field label="Địa chỉ API">
+      <Section title={t('admin.sectionProvider')}>
+        <Field label={t('admin.fieldApiUrl')}>
           <input name="chungchiBaseUrl" defaultValue={initial.chungchiBaseUrl} className={input} />
         </Field>
-        <Field
-          label={`API key ${initial.hasApiKey ? `(đã đặt ${initial.apiKeyHint}, để trống để giữ nguyên)` : '(chưa đặt)'}`}
-        >
-          <input name="chungchiApiKey" type="password" autoComplete="off" placeholder="Nhập để đổi" className={input} />
+        <Field label={initial.hasApiKey ? t('admin.fieldApiKeySet', { hint: initial.apiKeyHint }) : t('admin.fieldApiKeyUnset')}>
+          <input name="chungchiApiKey" type="password" autoComplete="off" placeholder={t('admin.enterToChange')} className={input} />
         </Field>
-        <Field label={`Webhook secret ${initial.hasWebhookSecret ? '(đã đặt, để trống để giữ nguyên)' : '(chưa đặt)'}`}>
+        <Field label={initial.hasWebhookSecret ? t('admin.fieldWebhookSet') : t('admin.fieldWebhookUnset')}>
           <input name="webhookSecret" type="password" autoComplete="off" placeholder="whsec_..." className={input} />
         </Field>
       </Section>
 
-      <Section title="Địa chỉ website shop">
-        <Field label="URL công khai của shop (HTTPS khi chạy thật)">
+      <Section title={t('admin.sectionSiteUrl')}>
+        <Field label={t('admin.fieldSiteUrl')}>
           <input name="siteUrl" defaultValue={initial.siteUrl} className={input} />
         </Field>
       </Section>
@@ -99,7 +99,7 @@ export default function SettingsForm({ initial }: { initial: ShopSettingsView })
       {error && <p className="text-sm text-red-600">{error}</p>}
       {msg && <p className="text-sm text-green-700">{msg}</p>}
       <button disabled={busy} className="rounded-lg bg-ink px-5 py-2.5 text-sm font-medium text-white disabled:opacity-60">
-        {busy ? 'Đang lưu...' : 'Lưu cấu hình'}
+        {busy ? t('admin.saving') : t('admin.saveSettings')}
       </button>
     </form>
   );

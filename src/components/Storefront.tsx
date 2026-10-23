@@ -6,53 +6,9 @@ import type { Plan } from '@/lib/api';
 import { Use } from './IconSprite';
 import CheckoutModal, { type Enroll } from './CheckoutModal';
 import UdidGuide from './UdidGuide';
+import { useI18n } from '@/lib/i18n';
 
 const vnd = (n: number) => n.toLocaleString('vi-VN') + 'đ';
-
-const DEFAULT_FEATURES = [
-  'Nhận chứng chỉ ngay',
-  'Hỗ trợ các quyền ứng dụng phổ biến',
-  'Cài và nhân bản ứng dụng',
-];
-
-const TOOLS = [
-  { href: '/sign', icon: 'i-file', title: 'Ký ứng dụng IPA', sub: 'Ứng dụng của bạn, thiết bị của bạn' },
-  { href: '/apps', icon: 'i-grid', title: 'Kho ứng dụng', sub: 'Khám phá và cài đặt' },
-  { href: '/check', icon: 'i-shield', title: 'Kiểm tra chứng chỉ', sub: 'Theo dõi trạng thái hoạt động' },
-  { href: '/lookup', icon: 'i-search', title: 'Tìm đơn hàng', sub: 'Quản lý cài đặt và bảo hành' },
-] as const;
-
-const STEPS = [
-  { t: 'Chọn gói & lấy UDID', d: 'Đăng nhập, chọn gói phù hợp và đăng ký mã thiết bị.' },
-  { t: 'Hoàn tất thanh toán', d: 'Quét VietQR và theo dõi trạng thái cấp chứng chỉ.' },
-  { t: 'Cài ứng dụng', d: 'Truy cập trang đơn hàng để tải chứng chỉ và cài app.' },
-];
-
-const FEATURES = [
-  { icon: 'i-phone', t: 'Cài đặt thuận tiện', d: 'Thực hiện các bước cài ứng dụng ngay trên iPhone.' },
-  { icon: 'i-file', t: 'Ký IPA của bạn', d: 'Sử dụng chứng chỉ phù hợp để ký ứng dụng cho thiết bị.' },
-  { icon: 'i-copy', t: 'Linh hoạt sử dụng', d: 'Khám phá các lựa chọn cài đặt và nhân bản ứng dụng.' },
-  { icon: 'i-shield', t: 'Quản lý tập trung', d: 'Tra cứu đơn, trạng thái chứng chỉ và thời hạn bảo hành.' },
-];
-
-const FAQ = [
-  {
-    q: 'UDID là gì và lấy ở đâu?',
-    a: 'UDID là mã nhận dạng thiết bị iOS, dùng để đăng ký thiết bị cho chứng chỉ. Bấm "Lấy UDID" trên iPhone bằng Safari, hệ thống tự đọc mã, bạn không cần nhập tay.',
-  },
-  {
-    q: 'Tôi đã có chứng chỉ, có cần mua lại không?',
-    a: 'Mỗi đơn gắn với một UDID cụ thể. Nếu chứng chỉ hiện có còn hoạt động và đúng thiết bị thì không cần mua lại. Liên hệ hỗ trợ nếu bạn không chắc.',
-  },
-  {
-    q: 'Nếu chứng chỉ không còn hoạt động thì sao?',
-    a: 'Vào trang đơn, bấm "Kiểm tra chứng chỉ", và "Yêu cầu bảo hành" nếu còn trong thời hạn bảo hành của gói. Cần hỗ trợ thêm, liên hệ Telegram kèm mã đơn.',
-  },
-  {
-    q: 'Thanh toán bằng cách nào?',
-    a: 'Hiện hỗ trợ chuyển khoản ngân hàng qua mã VietQR, nội dung chuyển khoản đã điền sẵn. Các phương thức khác sẽ được bổ sung sau.',
-  },
-];
 
 const KEY = 'metus_plan';
 const remember = (id: string) => {
@@ -81,6 +37,32 @@ export default function Storefront({
   enroll: Enroll | null;
   initialPlan: string;
 }) {
+  const { t } = useI18n();
+  const DEFAULT_FEATURES = [t('storefront.defFeat1'), t('storefront.defFeat2'), t('storefront.defFeat3')];
+  const TOOLS = [
+    { href: '/sign', icon: 'i-file', title: t('nav.signIpa'), sub: t('storefront.toolSignSub') },
+    { href: '/apps', icon: 'i-grid', title: t('nav.appStore'), sub: t('storefront.toolAppsSub') },
+    { href: '/check', icon: 'i-shield', title: t('workspace.navCheck'), sub: t('storefront.toolCheckSub') },
+    { href: '/lookup', icon: 'i-search', title: t('workspace.navLookup'), sub: t('storefront.toolLookupSub') },
+  ] as const;
+  const STEPS = [
+    { t: t('storefront.step1Title'), d: t('storefront.step1Desc') },
+    { t: t('storefront.step2Title'), d: t('storefront.step2Desc') },
+    { t: t('storefront.step3Title'), d: t('storefront.step3Desc') },
+  ];
+  const FEATURES = [
+    { icon: 'i-phone', t: t('storefront.feat1Title'), d: t('storefront.feat1Desc') },
+    { icon: 'i-file', t: t('storefront.feat2Title'), d: t('storefront.feat2Desc') },
+    { icon: 'i-copy', t: t('storefront.feat3Title'), d: t('storefront.feat3Desc') },
+    { icon: 'i-shield', t: t('storefront.feat4Title'), d: t('storefront.feat4Desc') },
+  ];
+  const FAQ = [
+    { q: t('storefront.faq1Q'), a: t('storefront.faq1A') },
+    { q: t('storefront.faq2Q'), a: t('storefront.faq2A') },
+    { q: t('storefront.faq3Q'), a: t('storefront.faq3A') },
+    { q: t('storefront.faq4Q'), a: t('storefront.faq4A') },
+  ];
+
   const sorted = useMemo(() => [...plans].sort((a, b) => a.price - b.price), [plans]);
   // Gói đề xuất: gói cao thứ hai khi có từ 3 gói trở lên
   const recommended = sorted.length >= 3 ? sorted[sorted.length - 2].id : '';
@@ -106,34 +88,34 @@ export default function Storefront({
       <section className="grid items-center gap-8 pb-10 pt-8 lg:min-h-[560px] lg:grid-cols-[1.04fr_1fr] lg:gap-10 lg:pb-12 lg:pt-10">
         <div>
           <div className="flex items-center gap-2.5 text-[9px] font-bold tracking-[2px] text-[#7c8b7b]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#86b74b]" /> MỞ RỘNG TRẢI NGHIỆM iOS
+            <span className="h-1.5 w-1.5 rounded-full bg-[#86b74b]" /> {t('storefront.heroEyebrow')}
           </div>
           <h1 className="my-6 text-[40px] font-bold leading-[1.17] tracking-[-2px] sm:text-[58px] sm:tracking-[-3px]">
-            iPhone của bạn.
+            {t('storefront.heroLine1')}
             <br />
-            <em className="not-italic text-[#82a650]">Nhiều khả năng</em>
+            <em className="not-italic text-[#82a650]">{t('storefront.heroLine2')}</em>
             <br />
-            hơn nữa.
+            {t('storefront.heroLine3')}
           </h1>
           <p className="max-w-[400px] text-[13px] leading-[1.95] text-muted">
-            Mua chứng chỉ, ký ứng dụng và cài Metus Browser.
+            {t('storefront.heroSub1')}
             <br />
-            Mọi thứ bạn cần, gọn trong một nơi.
+            {t('storefront.heroSub2')}
           </p>
           <div className="my-[26px] flex flex-wrap gap-3">
             <a href="#install" className="flex items-center gap-4 rounded-[11px] bg-deep px-[21px] py-[15px] text-xs font-semibold text-white hover:bg-deep-dark">
-              Chọn gói chứng chỉ <Use id="i-arrow" className="icon h-[17px] w-[17px]" />
+              {t('storefront.choosePlanCta')} <Use id="i-arrow" className="icon h-[17px] w-[17px]" />
             </a>
             <Link href="/apps" className="flex items-center gap-4 rounded-[11px] border border-line bg-white px-[21px] py-[15px] text-xs font-semibold hover:bg-[#f3f5ee]">
-              Kho ứng dụng <Use id="i-grid" className="icon h-[17px] w-[17px]" />
+              {t('nav.appStore')} <Use id="i-grid" className="icon h-[17px] w-[17px]" />
             </Link>
           </div>
           <div className="flex flex-wrap gap-4 text-[10px] text-[#7d887e]">
             <span className="flex items-center gap-1.5">
-              <Use id="i-shield" className="icon h-[13px] w-[13px] text-[#607e4a]" /> Chứng chỉ theo thiết bị
+              <Use id="i-shield" className="icon h-[13px] w-[13px] text-[#607e4a]" /> {t('storefront.badgePerDevice')}
             </span>
             <span className="flex items-center gap-1.5">
-              <Use id="i-phone" className="icon h-[13px] w-[13px] text-[#607e4a]" /> Cài trực tiếp trên iPhone
+              <Use id="i-phone" className="icon h-[13px] w-[13px] text-[#607e4a]" /> {t('storefront.badgeDirectInstall')}
             </span>
           </div>
         </div>
@@ -153,9 +135,9 @@ export default function Storefront({
                 <Use id="i-globe" className="icon h-[43px] w-[43px]" />
               </div>
               <h3 className="mb-1.5 text-center text-lg tracking-tight">Metus Browser</h3>
-              <p className="text-center text-[8px] leading-[1.7] text-[#c0c9bb]">Trải nghiệm theo cách của bạn.</p>
+              <p className="text-center text-[8px] leading-[1.7] text-[#c0c9bb]">{t('storefront.phoneTagline')}</p>
               <div className="my-[19px] rounded-[9px] border border-[#ffffff19] bg-[#ffffff13] p-[11px] text-[8px] text-[#bac5b6]">
-                ⌕ &nbsp; Tìm kiếm hoặc nhập địa chỉ
+                ⌕ &nbsp; {t('storefront.phoneSearchPlaceholder')}
               </div>
               <div className="flex gap-2">
                 {(['i-grid', 'i-file', 'i-shield'] as const).map((ic) => (
@@ -173,8 +155,8 @@ export default function Storefront({
                 <Use id="i-shield" className="icon h-[18px] w-[18px]" />
               </span>
               <div>
-                <strong className="block text-[11px]">Chứng chỉ iOS</strong>
-                <small className="text-[8px] text-[#85917f]">Đăng ký cho thiết bị của bạn</small>
+                <strong className="block text-[11px]">{t('nav.certificates')}</strong>
+                <small className="text-[8px] text-[#85917f]">{t('storefront.cardRegisterDevice')}</small>
               </div>
             </div>
           </div>
@@ -184,8 +166,8 @@ export default function Storefront({
                 <Use id="i-zap" className="icon h-[18px] w-[18px]" />
               </span>
               <div>
-                <strong className="block text-[11px]">Sẵn sàng trải nghiệm</strong>
-                <small className="text-[8px] text-[#85917f]">Cài ứng dụng trực tiếp trên iPhone</small>
+                <strong className="block text-[11px]">{t('orderDetail.readyTitle')}</strong>
+                <small className="text-[8px] text-[#85917f]">{t('storefront.cardDirectInstall')}</small>
               </div>
             </div>
           </div>
@@ -195,20 +177,20 @@ export default function Storefront({
 
       {/* Lối tắt công cụ */}
       <div className="mb-14 grid grid-cols-2 overflow-hidden rounded-[15px] border border-line bg-white sm:grid-cols-4">
-        {TOOLS.map((t, i) => (
+        {TOOLS.map((tool, i) => (
           <Link
-            key={t.href}
-            href={t.href}
+            key={tool.href}
+            href={tool.href}
             className={`flex items-center gap-3 border-line p-[18px] hover:bg-[#f0f5e9] sm:p-[21px] ${
               i < 2 ? 'border-b sm:border-b-0' : ''
             } ${i % 2 === 0 ? 'border-r' : ''} sm:border-r sm:[&:last-child]:border-r-0`}
           >
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-[#f3f5ee] text-[#5b7150]">
-              <Use id={t.icon} className="icon h-[18px] w-[18px]" />
+              <Use id={tool.icon} className="icon h-[18px] w-[18px]" />
             </span>
             <span>
-              <strong className="block text-xs">{t.title}</strong>
-              <small className="text-[9px] text-[#8a9388]">{t.sub}</small>
+              <strong className="block text-xs">{tool.title}</strong>
+              <small className="text-[9px] text-[#8a9388]">{tool.sub}</small>
             </span>
             <span className="ml-auto hidden text-[#9aa593] sm:inline">↗</span>
           </Link>
@@ -219,16 +201,16 @@ export default function Storefront({
       <section id="install" className="scroll-mt-6">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
           <div>
-            <div className="text-[9px] font-bold tracking-[2px] text-[#7c8b7b]">01 / CHỨNG CHỈ CHO THIẾT BỊ CỦA BẠN</div>
+            <div className="text-[9px] font-bold tracking-[2px] text-[#7c8b7b]">{t('storefront.pricingEyebrow')}</div>
             <h2 className="mt-3 text-[28px] leading-[1.3] tracking-[-1.2px] sm:text-[32px]">
-              Một lựa chọn phù hợp.
+              {t('storefront.pricingTitle1')}
               <br />
-              Trọn trải nghiệm Metus.
+              {t('storefront.pricingTitle2')}
             </h2>
-            <p className="mt-2.5 text-[11px] leading-[1.8] text-muted">Cùng thời hạn sử dụng. Linh hoạt thời gian bảo hành theo nhu cầu.</p>
+            <p className="mt-2.5 text-[11px] leading-[1.8] text-muted">{t('storefront.pricingSub')}</p>
           </div>
           <span className="flex items-center gap-2 whitespace-nowrap rounded-full border border-line bg-white px-[15px] py-[11px] text-[10px]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#86b74b]" /> 12 tháng sử dụng &nbsp; · &nbsp; 1 thiết bị / gói
+            <span className="h-1.5 w-1.5 rounded-full bg-[#86b74b]" /> {t('storefront.pricingBadge')}
           </span>
         </div>
 
@@ -245,7 +227,7 @@ export default function Storefront({
               >
                 {featured && (
                   <span className="absolute -top-[13px] left-[21px] rounded-[7px] bg-lime px-3 py-[7px] text-[8px] font-bold tracking-wide text-[#334a21]">
-                    METUS ĐỀ XUẤT
+                    {t('storefront.recommended')}
                   </span>
                 )}
                 <div
@@ -255,13 +237,15 @@ export default function Storefront({
                 >
                   <Use id={i === sorted.length - 1 ? 'i-zap' : 'i-shield'} className="icon h-[18px] w-[18px]" />
                 </div>
-                <div className={`mb-[7px] text-[10px] ${featured ? 'text-[#aab8a2]' : 'text-[#8b9685]'}`}>{p.receiveTime || 'Nhận chứng chỉ ngay'}</div>
+                <div className={`mb-[7px] text-[10px] ${featured ? 'text-[#aab8a2]' : 'text-[#8b9685]'}`}>{p.receiveTime || t('storefront.receiveNow')}</div>
                 <h3 className="mb-[21px] text-[17px] tracking-[-0.6px]">{p.title}</h3>
                 <div className="whitespace-nowrap text-[29px] font-bold tracking-[-1.5px]">
                   {vnd(p.price).replace('đ', '')}
                   <sup className="ml-0.5 align-top text-sm font-medium">đ</sup>
                 </div>
-                <div className={`mb-[22px] mt-[7px] text-[9px] ${featured ? 'text-[#aab8a2]' : 'text-[#98a090]'}`}>/ thiết bị · {p.validity || '12 tháng'}</div>
+                <div className={`mb-[22px] mt-[7px] text-[9px] ${featured ? 'text-[#aab8a2]' : 'text-[#98a090]'}`}>
+                  {t('storefront.perDevice')} · {p.validity || t('storefront.twelveMonths')}
+                </div>
                 <button
                   type="button"
                   onClick={() => buy(p.id)}
@@ -269,11 +253,11 @@ export default function Storefront({
                     featured ? 'border-lime bg-lime text-[#2b461a] hover:bg-lime-dark' : 'border-[#e2e8d9] bg-[#f0f4e8] hover:bg-[#e6ecdb]'
                   }`}
                 >
-                  Chọn gói này
+                  {t('storefront.choosePlan')}
                 </button>
                 <div className={`mt-[22px] flex items-center gap-[7px] border-t pt-[19px] text-[11px] font-semibold ${featured ? 'border-white/[0.12]' : 'border-line'}`}>
                   <Use id="i-shield" className={`icon h-4 w-4 ${featured ? 'text-lime' : 'text-[#7b9d4e]'}`} />
-                  {p.warranty || 'Có bảo hành'}
+                  {p.warranty || t('storefront.hasWarranty')}
                 </div>
                 <ul className={`mt-3 space-y-2.5 text-[10px] leading-[1.8] ${featured ? 'text-[#b7c3af]' : 'text-[#84917d]'}`}>
                   {feats.map((f) => (
@@ -286,33 +270,29 @@ export default function Storefront({
             );
           })}
           {sorted.length === 0 && (
-            <p className="col-span-full rounded-2xl border border-dashed border-[#cfd8cc] bg-white p-8 text-center text-xs text-muted">
-              Chưa tải được danh sách gói. Vui lòng thử lại sau.
-            </p>
+            <p className="col-span-full rounded-2xl border border-dashed border-[#cfd8cc] bg-white p-8 text-center text-xs text-muted">{t('storefront.plansLoadError')}</p>
           )}
         </div>
-        <p className="my-[17px] text-center text-[9px] text-[#8b9584] sm:mb-[66px]">
-          Giá và quyền lợi theo các gói đang hiển thị trên appstore.metus.vn. Xác nhận lại thông tin tại bước mua hàng.
-        </p>
+        <p className="my-[17px] text-center text-[9px] text-[#8b9584] sm:mb-[66px]">{t('storefront.pricingFootnote')}</p>
       </section>
 
       {/* Quy trình */}
       <section id="guide" className="mb-[70px] scroll-mt-6 rounded-[23px] bg-[#edf1e7] p-6 sm:p-9">
         <div className="grid gap-8 lg:grid-cols-[1.1fr_2fr] lg:items-center lg:gap-10">
           <div>
-            <div className="text-[9px] font-bold tracking-[2px] text-[#7c8b7b]">BẮT ĐẦU THẬT ĐƠN GIẢN</div>
+            <div className="text-[9px] font-bold tracking-[2px] text-[#7c8b7b]">{t('storefront.stepsEyebrow')}</div>
             <h2 className="my-3 text-[25px] leading-[1.3] tracking-[-1px] sm:text-[27px]">
-              Ba bước.
+              {t('storefront.stepsTitle1')}
               <br />
-              Sẵn sàng trải nghiệm.
+              {t('storefront.stepsTitle2')}
             </h2>
-            <p className="text-[11px] leading-[1.8] text-[#849078]">Thực hiện ngay trên thiết bị của bạn.</p>
+            <p className="text-[11px] leading-[1.8] text-[#849078]">{t('storefront.stepsSub')}</p>
             <button
               type="button"
               onClick={() => setGuide(true)}
               className="mt-[18px] inline-flex items-center gap-3 text-[11px] font-semibold"
             >
-              Xem cách lấy UDID <Use id="i-arrow" className="icon h-[15px] w-[15px]" />
+              {t('storefront.viewUdidGuide')} <Use id="i-arrow" className="icon h-[15px] w-[15px]" />
             </button>
           </div>
           <div className="grid gap-[22px] sm:grid-cols-3">
@@ -333,17 +313,15 @@ export default function Storefront({
       <section className="mb-[70px] grid gap-[22px] lg:grid-cols-[1.1fr_1fr]">
         <div className="relative min-h-[300px] overflow-hidden rounded-[23px] bg-deep p-7 text-white sm:p-9">
           <div className="pointer-events-none absolute -bottom-[70px] -right-[115px] h-[260px] w-[260px] rounded-full border border-[#aacd7b20] shadow-[0_0_0_30px_#aacd7b09,0_0_0_60px_#aacd7b06]" />
-          <div className="relative text-[9px] font-bold tracking-[2px] text-[#a7bb9e]">THÊM KHÔNG GIAN CHO TRẢI NGHIỆM</div>
+          <div className="relative text-[9px] font-bold tracking-[2px] text-[#a7bb9e]">{t('storefront.featuresEyebrow')}</div>
           <h2 className="relative my-3 max-w-[310px] text-[26px] leading-[1.35] tracking-[-1px] sm:text-[30px]">
-            Một hệ sinh thái.
+            {t('storefront.featuresTitle1')}
             <br />
-            Nhiều cách khám phá.
+            {t('storefront.featuresTitle2')}
           </h2>
-          <p className="relative max-w-[280px] text-[11px] leading-[1.8] text-[#a8ba9f]">
-            Từ chứng chỉ đến ứng dụng, Metus giúp bạn quản lý các bước cài đặt trong một trải nghiệm liền mạch.
-          </p>
+          <p className="relative max-w-[280px] text-[11px] leading-[1.8] text-[#a8ba9f]">{t('storefront.featuresDesc')}</p>
           <Link href="/apps" className="relative mt-6 inline-flex items-center gap-3 rounded-[11px] border border-white/20 px-4 py-3 text-[10px] font-semibold">
-            Khám phá kho ứng dụng <Use id="i-arrow" className="icon h-[15px] w-[15px]" />
+            {t('dashboard.exploreApps')} <Use id="i-arrow" className="icon h-[15px] w-[15px]" />
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-[15px] sm:grid-cols-2">
@@ -360,15 +338,15 @@ export default function Storefront({
       {/* FAQ */}
       <section id="faq" className="mb-[70px] grid scroll-mt-6 gap-10 lg:grid-cols-[1fr_1.45fr] lg:gap-20">
         <div>
-          <div className="text-[9px] font-bold tracking-[2px] text-[#7c8b7b]">GIẢI ĐÁP CÙNG METUS</div>
+          <div className="text-[9px] font-bold tracking-[2px] text-[#7c8b7b]">{t('storefront.faqEyebrow')}</div>
           <h2 className="my-3.5 text-[26px] leading-[1.3] tracking-[-1px] sm:text-[30px]">
-            Bạn hỏi.
+            {t('storefront.faqTitle1')}
             <br />
-            Metus giải đáp.
+            {t('storefront.faqTitle2')}
           </h2>
-          <p className="text-[11px] leading-[1.9] text-[#84907a]">Tìm hiểu trước khi bắt đầu. Nếu cần hỗ trợ thêm, hãy nhắn cho đội ngũ Metus.</p>
+          <p className="text-[11px] leading-[1.9] text-[#84907a]">{t('storefront.faqDesc')}</p>
           <a href="https://t.me/metusvn" target="_blank" rel="noreferrer" className="mt-[18px] inline-flex items-center gap-3 text-[11px] font-semibold">
-            Liên hệ qua Telegram <Use id="i-arrow" className="icon h-[15px] w-[15px]" />
+            {t('storefront.contactTelegram')} <Use id="i-arrow" className="icon h-[15px] w-[15px]" />
           </a>
         </div>
         <div>
@@ -388,11 +366,11 @@ export default function Storefront({
       {/* CTA cuối trang */}
       <section className="mb-[65px] flex flex-col items-start justify-between gap-6 rounded-[18px] border border-[#dce7cb] bg-[#eaf1df] p-7 sm:flex-row sm:items-center sm:p-9">
         <div>
-          <h3 className="mb-2 text-xl tracking-[-0.7px]">Trải nghiệm tiếp theo đang chờ bạn.</h3>
-          <p className="text-[11px] text-[#8a967d]">Chọn chứng chỉ phù hợp và bắt đầu cùng Metus.</p>
+          <h3 className="mb-2 text-xl tracking-[-0.7px]">{t('storefront.ctaTitle')}</h3>
+          <p className="text-[11px] text-[#8a967d]">{t('storefront.ctaDesc')}</p>
         </div>
         <a href="#install" className="flex shrink-0 items-center gap-4 rounded-[11px] bg-deep px-[21px] py-[15px] text-xs font-semibold text-white hover:bg-deep-dark">
-          Chọn gói chứng chỉ <Use id="i-arrow" className="icon h-[17px] w-[17px]" />
+          {t('storefront.choosePlanCta')} <Use id="i-arrow" className="icon h-[17px] w-[17px]" />
         </a>
       </section>
 

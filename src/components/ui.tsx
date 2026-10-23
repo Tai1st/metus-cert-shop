@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useI18n } from '@/lib/i18n';
 
 /** Các khối giao diện dùng chung trong khu Workspace, theo đúng style thẻ/bảng/nút của bản thiết kế. */
 
@@ -39,20 +42,22 @@ export function BtnLink({
   );
 }
 
-const STATUS: Record<string, { text: string; cls: string }> = {
-  awaiting_payment: { text: 'Chờ thanh toán', cls: 'bg-[#fff6dc] text-[#a27b28]' },
-  paid: { text: 'Đã thanh toán', cls: 'bg-[#eaf3f6] text-[#598496]' },
-  provisioning: { text: 'Đang cấp chứng chỉ', cls: 'bg-[#eaf3f6] text-[#598496]' },
-  completed: { text: 'Hoạt động', cls: 'bg-[#edf5e3] text-[#789b43]' },
-  failed: { text: 'Thất bại', cls: 'bg-[#fbe9e6] text-[#b45b45]' },
-  cancelled: { text: 'Đã hủy', cls: 'bg-[#f1f3ee] text-[#7f8c75]' },
+const STATUS_CLS: Record<string, string> = {
+  awaiting_payment: 'bg-[#fff6dc] text-[#a27b28]',
+  paid: 'bg-[#eaf3f6] text-[#598496]',
+  provisioning: 'bg-[#eaf3f6] text-[#598496]',
+  completed: 'bg-[#edf5e3] text-[#789b43]',
+  failed: 'bg-[#fbe9e6] text-[#b45b45]',
+  cancelled: 'bg-[#f1f3ee] text-[#7f8c75]',
 };
 
 export function Badge({ status }: { status: string }) {
-  const s = STATUS[status] || { text: status, cls: 'bg-[#f1f3ee] text-[#7f8c75]' };
+  const { t } = useI18n();
+  const cls = STATUS_CLS[status] || 'bg-[#f1f3ee] text-[#7f8c75]';
+  const text = (t(`common.status.${status}`) !== `common.status.${status}` && t(`common.status.${status}`)) || status;
   return (
-    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1.5 text-[8px] font-medium before:h-1 before:w-1 before:rounded-full before:bg-current ${s.cls}`}>
-      {s.text}
+    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1.5 text-[8px] font-medium before:h-1 before:w-1 before:rounded-full before:bg-current ${cls}`}>
+      {text}
     </span>
   );
 }

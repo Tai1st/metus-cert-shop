@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { post } from '@/lib/client';
+import { useI18n } from '@/lib/i18n';
 
 /** Nút hành động của admin trên một đơn: confirm (đã nhận tiền / gửi lại) hoặc cancel. */
 export default function AdminConfirm({
@@ -15,11 +16,12 @@ export default function AdminConfirm({
   label: string;
 }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
 
   async function run() {
-    if (action === 'cancel' && !confirm(`Hủy đơn ${code}?`)) return;
+    if (action === 'cancel' && !confirm(t('admin.confirmCancel', { code }))) return;
     setBusy(true);
     setErr('');
     const r = await post<{ error?: string }>(`/admin/orders/${code}/${action}`);

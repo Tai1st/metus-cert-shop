@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { post } from '@/lib/client';
+import { useI18n } from '@/lib/i18n';
 
 interface JobView {
   state: 'created' | 'waiting' | 'running' | 'done' | 'failed';
@@ -17,6 +18,7 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * tự tải chứng chỉ rồi vào trang Ký IPA), xong thì mở thẳng liên kết cài đặt trên Safari.
  */
 export default function InstallButton({ endpoint = '/app/install' }: { endpoint?: string }) {
+  const { t } = useI18n();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
@@ -26,7 +28,7 @@ export default function InstallButton({ endpoint = '/app/install' }: { endpoint?
     setBusy(true);
     setError('');
     setReady(null);
-    setMsg('Đang chuẩn bị chứng chỉ…');
+    setMsg(t('apps.preparingCert'));
 
     const start = await post<{ jobId: string }>(endpoint);
     if (!start.ok) {
@@ -35,14 +37,14 @@ export default function InstallButton({ endpoint = '/app/install' }: { endpoint?
       return setError(start.error);
     }
 
-    setMsg('Đang ký ứng dụng…');
+    setMsg(t('apps.signingApp'));
     for (let i = 0; i < 160; i++) {
       await wait(1500);
       const r = await fetch(`/api/cert-shop/sign/jobs/${start.data.jobId}`);
       if (!r.ok) {
         setBusy(false);
         setMsg('');
-        return setError('Không đọc được trạng thái, vui lòng thử lại');
+        return setError(t('apps.statusReadError'));
       }
       const v = (await r.json()) as JobView;
       if (v.state === 'done') {
@@ -56,12 +58,12 @@ export default function InstallButton({ endpoint = '/app/install' }: { endpoint?
       if (v.state === 'failed') {
         setBusy(false);
         setMsg('');
-        return setError(v.error || 'Ký thất bại');
+        return setError(v.error || t('sign.signFailed'));
       }
     }
     setBusy(false);
     setMsg('');
-    setError('Ký quá lâu, vui lòng thử lại');
+    setError(t('apps.signTimeout'));
   }
 
   if (ready?.installUrl) {
@@ -70,7 +72,7 @@ export default function InstallButton({ endpoint = '/app/install' }: { endpoint?
         href={ready.installUrl}
         className="flex items-center justify-center rounded-[9px] bg-lime py-3 text-center text-[10px] font-semibold text-[#2b461a] hover:bg-lime-dark"
       >
-        Cài đặt ngay
+        {t('apps.installNow')}
       </a>
     );
   }
@@ -83,7 +85,7 @@ export default function InstallButton({ endpoint = '/app/install' }: { endpoint?
         disabled={busy}
         className="flex w-full items-center justify-center rounded-[9px] bg-lime py-3 text-center text-[10px] font-semibold text-[#2b461a] hover:bg-lime-dark disabled:opacity-60"
       >
-        {busy ? msg || 'Đang xử lý…' : 'Cài đặt'}
+        {busy ? msg || t('common.processing') : t('apps.install')}
       </button>
       {error && (
         <p role="alert" className="mt-2 text-center text-[9px] text-[#b45b45]">

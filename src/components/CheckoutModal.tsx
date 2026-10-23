@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { post } from '@/lib/client';
 import type { Plan } from '@/lib/api';
+import { useI18n } from '@/lib/i18n';
 
 export interface Enroll {
   token: string;
@@ -14,13 +15,6 @@ export interface Enroll {
 }
 
 const vnd = (n: number) => n.toLocaleString('vi-VN') + 'đ';
-
-const METHODS = [
-  { id: 'vietqr', label: 'VietQR', on: true },
-  { id: 'balance', label: 'Số dư', on: false },
-  { id: 'usdt', label: 'USDT', on: false },
-  { id: 'paypal', label: 'PayPal', on: false },
-];
 
 /** Cửa sổ "Hoàn tất thanh toán": UDID, loại thiết bị, mật khẩu chứng chỉ, phương thức thanh toán. */
 export default function CheckoutModal({
@@ -37,6 +31,13 @@ export default function CheckoutModal({
   onClose: () => void;
 }) {
   const router = useRouter();
+  const { t } = useI18n();
+  const METHODS = [
+    { id: 'vietqr', label: 'VietQR', on: true },
+    { id: 'balance', label: t('checkout.methodBalance'), on: false },
+    { id: 'usdt', label: 'USDT', on: false },
+    { id: 'paypal', label: 'PayPal', on: false },
+  ];
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -92,14 +93,14 @@ export default function CheckoutModal({
         <button
           type="button"
           onClick={onClose}
-          aria-label="Đóng"
+          aria-label={t('common.close')}
           className="absolute right-4 top-3.5 h-7 w-7 rounded-full bg-[#f2f5ef] text-[#64715e]"
         >
           ×
         </button>
 
         <h2 id="checkout-title" className="mb-1 mt-1 text-center text-[22px] font-extrabold tracking-tight">
-          Hoàn tất <span className="text-[#f26b1d]">thanh toán</span>
+          {t('checkout.titleStart')} <span className="text-[#f26b1d]">{t('checkout.titleEnd')}</span>
         </h2>
         <p className="mb-5 text-center text-[11px] text-muted">
           {plan.title} · <b className="text-ink">{vnd(plan.price)}</b>
@@ -107,28 +108,28 @@ export default function CheckoutModal({
 
         {!loggedIn ? (
           <div className="space-y-3 py-2">
-            <p className="text-xs leading-[1.8] text-muted">Đăng nhập để lưu đơn hàng và tải lại chứng chỉ, ứng dụng bất cứ lúc nào.</p>
+            <p className="text-xs leading-[1.8] text-muted">{t('checkout.loginToSave')}</p>
             <Link
               href={`/login?next=${encodeURIComponent(next)}`}
               className="flex w-full items-center justify-center rounded-[12px] bg-mint p-3.5 text-xs font-bold text-[#20321a] hover:bg-mint-dark"
             >
-              Đăng nhập để tiếp tục →
+              {t('checkout.loginToContinue')} →
             </Link>
             <Link
               href={`/register?next=${encodeURIComponent(next)}`}
               className="flex w-full items-center justify-center rounded-[12px] border border-[#d8dfd9] p-3 text-xs font-semibold hover:bg-[#edf2e9]"
             >
-              Tạo tài khoản
+              {t('auth.createAccount')}
             </Link>
           </div>
         ) : (
           <>
             <div className="mb-4">
-              <label className={label}>UDID của bạn</label>
+              <label className={label}>{t('checkout.yourUdid')}</label>
               {enroll ? (
                 <div className="break-all rounded-[14px] border border-[#cfe0bd] bg-tint px-4 py-3 font-mono text-[11px]">{enroll.udid}</div>
               ) : (
-                <div className={`${field} text-[#9aa89a]`}>Nhập UDID thiết bị (lấy tự động bằng nút bên dưới)</div>
+                <div className={`${field} text-[#9aa89a]`}>{t('checkout.udidPlaceholder')}</div>
               )}
               {!enroll && (
                 <div className="mt-2.5 grid grid-cols-2 gap-2">
@@ -136,14 +137,14 @@ export default function CheckoutModal({
                     href="/api/cert-shop/udid/profile"
                     className="rounded-[12px] bg-ink p-3 text-center text-[11px] font-bold text-white hover:bg-ink-dark"
                   >
-                    Lấy UDID
+                    {t('checkout.getUdid')}
                   </a>
                   <button
                     type="button"
                     onClick={onGuide}
                     className="rounded-[12px] border border-[#dfe6d7] bg-[#f5f8ef] p-3 text-[11px] font-bold text-[#5d7e3d]"
                   >
-                    Hướng dẫn
+                    {t('nav.guide')}
                   </button>
                 </div>
               )}
@@ -152,7 +153,7 @@ export default function CheckoutModal({
                   {[enroll.product, enroll.version && `iOS ${enroll.version}`].filter(Boolean).join(' · ')}
                   {' · '}
                   <button type="button" onClick={onGuide} className="text-[#648d42]">
-                    Cách lấy UDID
+                    {t('checkout.howToGetUdid')}
                   </button>
                 </p>
               )}
@@ -160,21 +161,21 @@ export default function CheckoutModal({
 
             <div className="mb-4">
               <label className={label} htmlFor="p12">
-                Đặt mật khẩu chứng chỉ
+                {t('checkout.setCertPassword')}
               </label>
               <input
                 id="p12"
                 value={password}
                 onChange={(e) => setPassword(e.target.value.replace(/[^A-Za-z0-9]/g, '').slice(0, 32))}
-                placeholder="Để trống để hệ thống tự tạo"
+                placeholder={t('checkout.passwordPlaceholder')}
                 autoComplete="off"
                 className={field}
               />
-              <p className="mt-1.5 text-[10px] text-muted">Dùng khi ký ứng dụng bằng file .p12. Chỉ gồm chữ và số.</p>
+              <p className="mt-1.5 text-[10px] text-muted">{t('checkout.passwordHint')}</p>
             </div>
 
             <div className="mb-4">
-              <label className={label}>Chọn phương thức thanh toán</label>
+              <label className={label}>{t('checkout.choosePaymentMethod')}</label>
               <div className="grid grid-cols-2 gap-2">
                 {METHODS.map((m) => (
                   <div
@@ -185,17 +186,17 @@ export default function CheckoutModal({
                     }`}
                   >
                     {m.label}
-                    {!m.on && <span className="ml-1 text-[9px] font-normal">sắp có</span>}
+                    {!m.on && <span className="ml-1 text-[9px] font-normal">{t('checkout.comingSoon')}</span>}
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="mb-4 rounded-xl bg-[#f7f9f5] p-4 text-[11px] text-[#748174]">
-              <div className="mb-2.5 flex justify-between"><span>Gói chứng chỉ</span><strong className="font-medium text-ink">{plan.title.replace(/^Gói\s+/i, '')}</strong></div>
-              <div className="mb-2.5 flex justify-between"><span>Bảo hành</span><strong className="font-medium text-ink">{plan.warranty || '—'}</strong></div>
+              <div className="mb-2.5 flex justify-between"><span>{t('checkout.certPlan')}</span><strong className="font-medium text-ink">{plan.title.replace(/^Gói\s+/i, '')}</strong></div>
+              <div className="mb-2.5 flex justify-between"><span>{t('checkout.warranty')}</span><strong className="font-medium text-ink">{plan.warranty || '—'}</strong></div>
               <div className="flex justify-between border-t border-dashed border-[#d8dfd3] pt-3 font-bold text-ink">
-                <span>Tổng thanh toán</span>
+                <span>{t('checkout.total')}</span>
                 <strong className="text-xl tracking-[-0.7px]">{vnd(plan.price)}</strong>
               </div>
             </div>
@@ -205,9 +206,9 @@ export default function CheckoutModal({
               disabled={busy || !enroll}
               className="flex w-full items-center justify-center gap-3 rounded-[12px] bg-mint p-3.5 text-xs font-bold text-[#20321a] transition hover:bg-mint-dark disabled:opacity-50"
             >
-              {busy ? 'Đang tạo đơn...' : enroll ? 'Thanh toán' : 'Lấy UDID để tiếp tục'} <span>→</span>
+              {busy ? t('checkout.creatingOrder') : enroll ? t('checkout.pay') : t('checkout.getUdidToContinue')} <span>→</span>
             </button>
-            <div className="mt-3 text-center text-[9px] text-[#8a9587]">♧ &nbsp; Không yêu cầu mật khẩu Apple ID</div>
+            <div className="mt-3 text-center text-[9px] text-[#8a9587]">♧ &nbsp; {t('checkout.noAppleIdRequired')}</div>
           </>
         )}
       </form>
