@@ -1,5 +1,6 @@
 import AuthForm from '@/components/AuthForm';
 
-export default function LoginPage() {
-  return <AuthForm mode="login" />;
+export default async function LoginPage({ searchParams }: PageProps<'/login'>) {
+  const next = (await searchParams).next;
+  return <AuthForm mode="login" next={typeof next === 'string' ? next : undefined} />;
 }

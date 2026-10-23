@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
-import { be, getMe } from '@/lib/api';
+import { be, getMe, type AppInfo } from '@/lib/api';
+import AppDownload from '@/components/AppDownload';
 import OrderActions from '@/components/OrderActions';
 import OrderStatus from '@/components/OrderStatus';
 
@@ -29,6 +30,8 @@ export default async function OrderPage({ params }: PageProps<'/orders/[code]'>)
   const r = await be<Order>(`/orders/${encodeURIComponent(code)}`);
   if (!r.ok) notFound();
   const order = r.data;
+  // Thẻ tải app chỉ cần khi chứng chỉ đã sẵn sàng
+  const app = order.status === 'completed' ? await be<AppInfo>('/app') : null;
   const pay = order.payment;
 
   return (
@@ -37,6 +40,29 @@ export default async function OrderPage({ params }: PageProps<'/orders/[code]'>)
         <h1 className="text-lg font-semibold">Đơn {order.code}</h1>
         <OrderStatus status={order.status} />
       </div>
+
+      {order.status !== 'failed' && order.status !== 'cancelled' && (
+        <div className="flex items-center gap-1.5 rounded-xl border border-line bg-white p-4 text-[11px]">
+          {['Thanh toán', 'Nhận chứng chỉ', 'Cài ứng dụng'].map((label, i) => {
+            // 1 = chờ thanh toán, 2 = đang cấp chứng chỉ, 3 = đã có chứng chỉ, sẵn sàng cài app
+            const now = order.status === 'awaiting_payment' ? 1 : order.status === 'completed' ? 3 : 2;
+            const done = i + 1 < now;
+            return (
+              <div key={label} className="flex flex-1 items-center gap-1.5 last:flex-none">
+                <b
+                  className={`grid h-[22px] w-[22px] shrink-0 place-items-center rounded-full text-[10px] ${
+                    i + 1 === now ? 'bg-ink text-white' : done ? 'bg-mint text-[#20321a]' : 'bg-[#edf0eb] text-[#9aab99]'
+                  }`}
+                >
+                  {done ? '✓' : i + 1}
+                </b>
+                <span className={i + 1 === now ? 'font-semibold' : 'text-muted'}>{label}</span>
+                {i < 2 && <i className="h-px flex-1 bg-line" />}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div className="space-y-1 rounded-xl border border-slate-200 bg-white p-4 text-sm">
         <Row k="Gói" v={order.planTitle} />
@@ -75,6 +101,7 @@ export default async function OrderPage({ params }: PageProps<'/orders/[code]'>)
       )}
 
       <OrderActions code={order.code} status={order.status} hasProvider={order.hasProvider} />
+      {app?.ok && <AppDownload app={app.data} />}
     </div>
   );
 }

@@ -4,8 +4,10 @@ import Storefront from '@/components/Storefront';
 export const dynamic = 'force-dynamic';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
-  const e = (await searchParams).e;
-  const token = typeof e === 'string' ? e : '';
+  const sp = await searchParams;
+  const str = (v: string | string[] | undefined) => (typeof v === 'string' ? v : '');
+  const token = str(sp.e);
+  const initialPlan = str(sp.plan);
 
   const [me, plans, enroll] = await Promise.all([
     getMe(),
@@ -21,6 +23,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
       plans={plans.ok ? plans.data.plans : []}
       loggedIn={Boolean(me)}
       enroll={me && enroll?.ok ? { token, ...enroll.data } : null}
+      initialPlan={initialPlan}
     />
   );
 }

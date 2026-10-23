@@ -4,7 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { post } from '@/lib/client';
 
-export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
+/** Chỉ cho chuyển hướng nội bộ (bắt đầu bằng một dấu /), chặn open redirect kiểu //evil.com hay /\evil.com. */
+const safeNext = (n?: string) => (n && /^\/(?![/\\])/.test(n) ? n : '/');
+
+export default function AuthForm({ mode, next }: { mode: 'login' | 'register'; next?: string }) {
   const router = useRouter();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,7 +20,7 @@ export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
     const r = await post(`/auth/${mode}`, f);
     setLoading(false);
     if (!r.ok) return setError(r.error);
-    router.push('/buy');
+    router.push(safeNext(next));
     router.refresh();
   }
 

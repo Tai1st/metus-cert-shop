@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { be, getMe, vnd } from '@/lib/api';
+import { be, getMe, vnd, type AppInfo } from '@/lib/api';
+import AdminAppUpload from '@/components/AdminAppUpload';
 import AdminConfirm from '@/components/AdminConfirm';
 import OrderStatus, { STATUS_LABEL } from '@/components/OrderStatus';
 
@@ -42,9 +43,10 @@ export default async function AdminPage({ searchParams }: PageProps<'/admin'>) {
   if (status) qs.set('status', status);
   if (q) qs.set('q', q);
 
-  const [stats, list] = await Promise.all([
+  const [stats, list, app] = await Promise.all([
     be<Stats>('/admin/stats'),
     be<{ total: number; items: Row[] }>(`/admin/orders?${qs}`),
+    be<AppInfo>('/admin/app'),
   ]);
   const s = stats.ok ? stats.data : null;
   const items = list.ok ? list.data.items : [];
@@ -78,6 +80,8 @@ export default async function AdminPage({ searchParams }: PageProps<'/admin'>) {
           />
         </div>
       )}
+
+      <AdminAppUpload app={app.ok ? app.data : { available: false }} />
 
       <div className="flex flex-wrap gap-2 text-xs">
         <Link href="/admin" className={`rounded-full border px-3 py-1 ${!status ? 'border-accent bg-tint text-accent' : 'border-slate-200 bg-white'}`}>

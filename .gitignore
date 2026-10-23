@@ -42,3 +42,6 @@ next-env.d.ts
 
 # giữ file mẫu cấu hình (không chứa secret)
 !.env.example
+
+# File IPA không đưa vào git (đưa lên server qua admin API/SSH)
+*.ipa

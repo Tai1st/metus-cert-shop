@@ -2,7 +2,39 @@
 export const post = <T = Record<string, unknown>>(path: string, body?: unknown) =>
   send<T>('POST', path, body);
 
-export const put = <T = Record<string, unknown>>(path: string, body?: unknown) =>
+/** Gửi nội dung file thô lên BE (có tiến trình). Dùng cho IPA lớn nên không dùng fetch. */
+export function uploadRaw(
+  path: string,
+  file: File,
+  onProgress?: (percent: number) => void
+): Promise<{ ok: boolean; data: Record<string, unknown>; error: string }> {
+  return new Promise((resolve) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', `/api/cert-shop${path}`);
+    xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress?.(Math.round((e.loaded / e.total) * 100));
+    xhr.onload = () => {
+      let data: Record<string, unknown> = {};
+      try {
+        data = JSON.parse(xhr.responseText);
+      } catch {
+        /* Cloudflare/nginx có thể trả trang chữ */
+      }
+      const ok = xhr.status >= 200 && xhr.status < 300;
+      const m = data.message;
+      const msg = Array.isArray(m) ? m[0] : (m as string | undefined);
+      resolve({
+        ok,
+        data,
+        error: ok ? '' : msg || (xhr.status === 413 ? 'File vượt quá giới hạn của máy chủ' : `Tải lên thất bại (${xhr.status})`),
+      });
+    };
+    xhr.onerror = () => resolve({ ok: false, data: {}, error: 'Mất kết nối khi tải lên, vui lòng thử lại' });
+    xhr.send(file);
+  });
+}
+
+export const put =<T = Record<string, unknown>>(path: string, body?: unknown) =>
   send<T>('PUT', path, body);
 
 async function send<T>(

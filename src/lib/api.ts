@@ -47,4 +47,15 @@ export interface Plan {
   currency: string;
 }
 
-export const vnd = (n: number) => n.toLocaleString('vi-VN') + 'đ';
+export { vnd, fmtSize } from './format';
+
+export interface AppInfo {
+  available: boolean;
+  name?: string;
+  version?: string;
+  bundleId?: string;
+  minOs?: string;
+  size?: number;
+  canDownload?: boolean;
+  maxMb?: number;
+}
