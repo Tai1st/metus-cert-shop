@@ -1,0 +1,52 @@
+name: Deploy FE
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          BE_URL: http://127.0.0.1:4100
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.VPS_PORT }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd /var/www/metus-cert-shop
+            rm -rf .next.backup
+            cp -r .next .next.backup 2>/dev/null || true
+            git pull origin main
+            npm ci
+            npm run build || (rm -rf .next && mv .next.backup .next && pm2 restart metus-cert-shop && exit 1)
+            pm2 reload metus-cert-shop || pm2 start ecosystem.config.js
+            ok=0
+            for i in $(seq 1 12); do
+              sleep 5
+              if curl -fsS -o /dev/null http://localhost:3002/login; then ok=1; break; fi
+            done
+            if [ "$ok" != "1" ]; then
+              echo "Health check failed, rolling back"
+              rm -rf .next && mv .next.backup .next && pm2 restart metus-cert-shop
+              exit 1
+            fi
+            pm2 save
+            echo "Deploy FE (cert-shop) completed successfully!"
