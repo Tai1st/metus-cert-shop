@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { post, uploadRaw } from '@/lib/client';
+import { post, put, uploadRaw } from '@/lib/client';
 import { fmtSize } from '@/lib/format';
 import { Use } from './IconSprite';
 import { Badge, Card, InfoRow, PageHead, ResultEmpty } from './ui';
@@ -100,7 +100,7 @@ export default function SignForm({ status, quickApps }: { status: Status; quickA
 
     if (quick) {
       setStep('Chọn ứng dụng');
-      const picked = await post(`/sign/jobs/${id}/quick-app/${quick}`);
+      const picked = await put(`/sign/jobs/${id}/quick-app/${quick}`);
       if (!picked.ok) return fail(picked.error);
     } else {
       setStep('Tải ứng dụng lên');
