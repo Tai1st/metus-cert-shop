@@ -6,11 +6,9 @@ import { useEffect, useState, type ReactNode } from 'react';
 
 const ring = 'ring-2 ring-red-500 ring-offset-1';
 
-function Panel({ dim, wide, children }: { dim?: boolean; wide?: boolean; children: ReactNode }) {
+function Panel({ dim, children }: { dim?: boolean; children: ReactNode }) {
   return (
-    <div
-      className={`relative min-h-[170px] shrink-0 overflow-hidden rounded-xl border border-line bg-white p-2.5 text-[9px] leading-tight sm:w-auto sm:flex-1 ${wide ? 'w-full sm:shrink' : 'w-[160px]'}`}
-    >
+    <div className="relative min-h-[120px] min-w-0 flex-1 overflow-hidden rounded-xl border border-line bg-white p-1.5 text-[6.5px] leading-tight sm:min-h-[170px] sm:p-2.5 sm:text-[9px]">
       {children}
       {dim && <div className="absolute inset-0 bg-black/45" />}
     </div>
@@ -20,14 +18,17 @@ function Panel({ dim, wide, children }: { dim?: boolean; wide?: boolean; childre
 /** Hộp thoại kiểu iOS, đặt đè lên lớp tối của Panel */
 function IosDialog({ title, body, actions }: { title?: string; body: string; actions: { label: string; hit?: boolean }[] }) {
   return (
-    <div className="absolute inset-x-2 top-1/2 z-10 -translate-y-1/2 overflow-hidden rounded-xl bg-[#2c2c2e] text-center text-white">
-      <div className="p-2.5">
-        {title && <div className="mb-1 text-[10px] font-semibold">{title}</div>}
-        <div className="text-[9px] leading-snug text-[#e5e5ea]">{body}</div>
+    <div className="absolute inset-x-1 top-1/2 z-10 -translate-y-1/2 overflow-hidden rounded-lg bg-[#2c2c2e] text-center text-white sm:inset-x-2 sm:rounded-xl">
+      <div className="p-1.5 sm:p-2.5">
+        {title && <div className="mb-1 text-[7px] font-semibold sm:text-[10px]">{title}</div>}
+        <div className="text-[6.5px] leading-snug text-[#e5e5ea] sm:text-[9px]">{body}</div>
       </div>
       <div className="flex border-t border-[#48484a]">
         {actions.map((a) => (
-          <div key={a.label} className={`flex-1 overflow-hidden py-1.5 text-[9px] text-[#4a9bff] ${a.hit ? 'font-semibold' : ''}`}>
+          <div
+            key={a.label}
+            className={`flex-1 overflow-hidden py-1 text-[6.5px] text-[#4a9bff] sm:py-1.5 sm:text-[9px] ${a.hit ? 'font-semibold' : ''}`}
+          >
             <span className={`whitespace-nowrap rounded px-0.5 ${a.hit ? ring : ''}`}>{a.label}</span>
           </div>
         ))}
@@ -40,20 +41,20 @@ function FakeOrderCard() {
   return (
     <>
       <div className="mb-1 font-semibold">UDID thiết bị</div>
-      <div className="mb-2 rounded-md border border-[#dfe5de] p-1.5 text-muted">Nhập UDID của iPhone / iPad</div>
-      <div className="flex gap-1.5">
-        <div className={`flex-1 rounded-md bg-ink p-1.5 text-center text-white ${ring}`}>Lấy UDID ↗</div>
-        <div className="flex-1 rounded-md border border-[#dfe6d7] bg-[#f5f8ef] p-1.5 text-center text-[#5d7e3d]">Hướng dẫn</div>
+      <div className="mb-1.5 rounded-md border border-[#dfe5de] p-1 text-muted sm:mb-2 sm:p-1.5">Nhập UDID của iPhone / iPad</div>
+      <div className="flex gap-1">
+        <div className={`flex-1 rounded-md bg-ink p-1 text-center text-white sm:p-1.5 ${ring}`}>Lấy UDID ↗</div>
+        <div className="flex-1 rounded-md border border-[#dfe6d7] bg-[#f5f8ef] p-1 text-center text-[#5d7e3d] sm:p-1.5">Hướng dẫn</div>
       </div>
-      <div className="mt-3 mb-1 font-semibold">Phương thức thanh toán</div>
-      <div className="rounded-md border border-[#dfe5de] p-1.5 text-muted">Chuyển khoản ngân hàng</div>
+      <div className="mt-2 mb-1 font-semibold sm:mt-3">Phương thức thanh toán</div>
+      <div className="rounded-md border border-[#dfe5de] p-1 text-muted sm:p-1.5">Chuyển khoản ngân hàng</div>
     </>
   );
 }
 
 function FigureDownload() {
   return (
-    <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+    <div className="mt-4 flex gap-1.5 sm:gap-2">
       <Panel>
         <FakeOrderCard />
       </Panel>
@@ -78,29 +79,29 @@ function FigureDownload() {
 
 function FigureInstall() {
   return (
-    <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+    <div className="mt-4 flex gap-1.5 sm:gap-2">
       <Panel>
-        <div className="mb-2 text-sm font-bold">Cài đặt</div>
-        <div className="space-y-1.5">
-          <div className="rounded-lg bg-[#f2f2f7] p-2 text-muted">Tìm kiếm</div>
-          <div className={`flex items-center justify-between rounded-lg bg-[#f2f2f7] p-2 ${ring}`}>
+        <div className="mb-1.5 text-[8px] font-bold sm:mb-2 sm:text-sm">Cài đặt</div>
+        <div className="space-y-1 sm:space-y-1.5">
+          <div className="rounded-lg bg-[#f2f2f7] p-1 text-muted sm:p-2">Tìm kiếm</div>
+          <div className={`flex items-center justify-between rounded-lg bg-[#f2f2f7] p-1 sm:p-2 ${ring}`}>
             <span className="font-semibold text-ink">Đã tải về hồ sơ</span>
             <span className="text-muted">›</span>
           </div>
-          <div className="rounded-lg bg-[#f2f2f7] p-2">Chung</div>
-          <div className="rounded-lg bg-[#f2f2f7] p-2">Màn hình &amp; Độ sáng</div>
+          <div className="rounded-lg bg-[#f2f2f7] p-1 sm:p-2">Chung</div>
+          <div className="rounded-lg bg-[#f2f2f7] p-1 sm:p-2">Màn hình &amp; Độ sáng</div>
         </div>
       </Panel>
       <Panel>
-        <div className="mb-2 flex items-center justify-between text-[10px] text-[#007aff]">
+        <div className="mb-1.5 flex items-center justify-between text-[6.5px] text-[#007aff] sm:mb-2 sm:text-[10px]">
           <span>Hủy</span>
           <span className={`rounded px-1 font-semibold ${ring}`}>Cài đặt</span>
         </div>
-        <div className="mb-1.5 text-center">
-          <div className="text-[11px] font-bold">Lấy UDID thiết bị</div>
+        <div className="mb-1 text-center sm:mb-1.5">
+          <div className="text-[7.5px] font-bold sm:text-[11px]">Lấy UDID thiết bị</div>
           <div className="text-muted">Metus</div>
         </div>
-        <div className="space-y-1 rounded-lg bg-[#f2f2f7] p-2">
+        <div className="space-y-1 rounded-lg bg-[#f2f2f7] p-1 sm:p-2">
           <div className="flex justify-between"><span className="text-muted">Đã ký bởi</span><span className="text-red-600">Chưa được ký</span></div>
           <div className="flex justify-between"><span className="text-muted">Mô tả</span><span className="max-w-[60%] text-right">Xác định UDID thiết bị</span></div>
           <div className="flex justify-between"><span className="text-muted">Chứa</span><span>Dịch vụ hồ sơ</span></div>
@@ -112,15 +113,15 @@ function FigureInstall() {
 
 function FigureBack() {
   return (
-    <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-      <Panel wide>
-        <div className="mb-2 rounded-full bg-[#f2f2f7] px-2 py-1 text-center text-[#3c3c43]">🔒 appstore.metus.vn</div>
+    <div className="mt-4 flex gap-1.5 sm:gap-2">
+      <Panel>
+        <div className="mb-1.5 rounded-full bg-[#f2f2f7] px-2 py-1 text-center text-[#3c3c43] sm:mb-2">🔒 appstore.metus.vn</div>
         <div className="mb-1 font-semibold">UDID thiết bị</div>
-        <div className="mb-1 break-all rounded-md border border-[#dfe5de] bg-[#f7f9f5] p-1.5 font-mono">00008120-000A11223344401E</div>
-        <div className="mb-2 text-muted">iPhone15,3 · iOS 22A100</div>
-        <div className="rounded-md bg-mint p-2 text-center font-bold text-[#20321a]">Tiếp tục thanh toán →</div>
+        <div className="mb-1 break-all rounded-md border border-[#dfe5de] bg-[#f7f9f5] p-1 font-mono sm:p-1.5">00008120-000A11223344401E</div>
+        <div className="mb-1.5 text-muted sm:mb-2">iPhone15,3 · iOS 22A100</div>
+        <div className="rounded-md bg-mint p-1.5 text-center font-bold text-[#20321a] sm:p-2">Tiếp tục thanh toán →</div>
       </Panel>
-      <div className="flex flex-1 items-center rounded-xl border border-dashed border-[#cfd8cc] bg-[#f7f9f5] p-3 text-[10px] leading-[1.7] text-muted">
+      <div className="flex flex-1 items-center rounded-xl border border-dashed border-[#cfd8cc] bg-[#f7f9f5] p-1.5 text-[6.5px] leading-[1.6] text-muted sm:p-3 sm:text-[10px] sm:leading-[1.7]">
         UDID được điền sẵn. Bạn chỉ cần chọn gói và thanh toán, không phải sao chép thủ công.
       </div>
     </div>
