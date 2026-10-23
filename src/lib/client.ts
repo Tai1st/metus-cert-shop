@@ -16,7 +16,13 @@ async function send<T>(
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const text = await res.text();
-  const data = (text ? JSON.parse(text) : {}) as T & { message?: string | string[] };
+  // Cloudflare/nginx có thể trả trang chữ thay vì JSON khi origin lỗi
+  let data = {} as T & { message?: string | string[] };
+  try {
+    data = (text ? JSON.parse(text) : {}) as typeof data;
+  } catch {
+    return { ok: false, data, error: `Máy chủ lỗi (${res.status}), vui lòng thử lại sau` };
+  }
   const msg = Array.isArray(data.message) ? data.message[0] : data.message;
   return { ok: res.ok, data, error: res.ok ? '' : msg || 'Có lỗi xảy ra' };
 }
