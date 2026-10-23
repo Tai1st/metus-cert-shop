@@ -6,9 +6,11 @@ import { useEffect, useState, type ReactNode } from 'react';
 
 const ring = 'ring-2 ring-red-500 ring-offset-1';
 
-function Panel({ dim, children }: { dim?: boolean; children: ReactNode }) {
+function Panel({ dim, wide, children }: { dim?: boolean; wide?: boolean; children: ReactNode }) {
   return (
-    <div className="relative min-h-[170px] flex-1 overflow-hidden rounded-xl border border-line bg-white p-2.5 text-[9px] leading-tight">
+    <div
+      className={`relative min-h-[170px] shrink-0 overflow-hidden rounded-xl border border-line bg-white p-2.5 text-[9px] leading-tight sm:w-auto sm:flex-1 ${wide ? 'w-full sm:shrink' : 'w-[160px]'}`}
+    >
       {children}
       {dim && <div className="absolute inset-0 bg-black/45" />}
     </div>
@@ -51,7 +53,7 @@ function FakeOrderCard() {
 
 function FigureDownload() {
   return (
-    <div className="mt-4 flex gap-2">
+    <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
       <Panel>
         <FakeOrderCard />
       </Panel>
@@ -76,7 +78,7 @@ function FigureDownload() {
 
 function FigureInstall() {
   return (
-    <div className="mt-4 flex gap-2">
+    <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
       <Panel>
         <div className="mb-2 text-sm font-bold">Cài đặt</div>
         <div className="space-y-1.5">
@@ -110,8 +112,8 @@ function FigureInstall() {
 
 function FigureBack() {
   return (
-    <div className="mt-4 flex gap-2">
-      <Panel>
+    <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+      <Panel wide>
         <div className="mb-2 rounded-full bg-[#f2f2f7] px-2 py-1 text-center text-[#3c3c43]">🔒 appstore.metus.vn</div>
         <div className="mb-1 font-semibold">UDID thiết bị</div>
         <div className="mb-1 break-all rounded-md border border-[#dfe5de] bg-[#f7f9f5] p-1.5 font-mono">00008120-000A11223344401E</div>
