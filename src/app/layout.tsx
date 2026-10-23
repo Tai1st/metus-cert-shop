@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Be_Vietnam_Pro } from 'next/font/google';
 import IconSprite from '@/components/IconSprite';
+import { LanguagePickerGate } from '@/components/LanguagePicker';
+import { I18nProvider } from '@/lib/i18n';
 import './globals.css';
 
 const font = Be_Vietnam_Pro({
@@ -21,7 +23,10 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     <html lang="vi" className={`${font.variable} h-full scroll-smooth antialiased`}>
       <body className="min-h-full text-[14px]">
         <IconSprite />
-        {children}
+        <I18nProvider>
+          <LanguagePickerGate />
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { post } from '@/lib/client';
+import { useI18n } from '@/lib/i18n';
 
 /** Chỉ cho chuyển hướng nội bộ (bắt đầu bằng một dấu /), chặn open redirect kiểu //evil.com hay /\evil.com. */
 const safeNext = (n?: string) => (n && /^\/(?![/\\])/.test(n) ? n : '/dashboard');
@@ -13,6 +14,7 @@ const label = 'mb-2 block text-[11px] font-medium';
 
 export default function AuthForm({ mode, next }: { mode: 'login' | 'register'; next?: string }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -30,28 +32,26 @@ export default function AuthForm({ mode, next }: { mode: 'login' | 'register'; n
 
   return (
     <form onSubmit={submit} className="w-full max-w-sm rounded-2xl border border-line bg-white p-7 shadow-[0_5px_24px_#21361710]">
-      <h1 className="mb-1 text-lg font-bold tracking-tight">{mode === 'login' ? 'Chào bạn trở lại' : 'Tạo tài khoản Metus'}</h1>
-      <p className="mb-6 text-[11px] leading-[1.8] text-muted">
-        {mode === 'login' ? 'Đăng nhập để quản lý chứng chỉ và đơn hàng của bạn.' : 'Quản lý chứng chỉ, ký IPA và đơn hàng ở một nơi.'}
-      </p>
+      <h1 className="mb-1 text-lg font-bold tracking-tight">{mode === 'login' ? t('auth.loginTitle') : t('auth.registerTitle')}</h1>
+      <p className="mb-6 text-[11px] leading-[1.8] text-muted">{mode === 'login' ? t('auth.loginSub') : t('auth.registerSub')}</p>
 
       <div className="mb-4">
         <label className={label} htmlFor="username">
-          Tên đăng nhập
+          {t('auth.username')}
         </label>
-        <input id="username" name="username" required autoComplete="username" placeholder="vd: nguyenvana" className={input} />
+        <input id="username" name="username" required autoComplete="username" placeholder={t('auth.usernamePlaceholder')} className={input} />
       </div>
       {mode === 'register' && (
         <div className="mb-4">
           <label className={label} htmlFor="fullName">
-            Họ tên <span className="text-muted">(không bắt buộc)</span>
+            {t('auth.fullName')} <span className="text-muted">{t('auth.optional')}</span>
           </label>
-          <input id="fullName" name="fullName" placeholder="Nguyễn Văn A" className={input} />
+          <input id="fullName" name="fullName" placeholder={t('auth.fullNamePlaceholder')} className={input} />
         </div>
       )}
       <div className="mb-5">
         <label className={label} htmlFor="password">
-          Mật khẩu
+          {t('auth.password')}
         </label>
         <input
           id="password"
@@ -60,7 +60,7 @@ export default function AuthForm({ mode, next }: { mode: 'login' | 'register'; n
           required
           minLength={mode === 'register' ? 8 : 1}
           autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-          placeholder={mode === 'register' ? 'Tối thiểu 8 ký tự' : 'Nhập mật khẩu'}
+          placeholder={mode === 'register' ? t('auth.minChars') : t('auth.enterPassword')}
           className={input}
         />
       </div>
@@ -71,7 +71,7 @@ export default function AuthForm({ mode, next }: { mode: 'login' | 'register'; n
         </p>
       )}
       <button disabled={loading} className="w-full rounded-[9px] bg-deep py-3 text-xs font-semibold text-white hover:bg-deep-dark disabled:opacity-60">
-        {loading ? 'Đang xử lý…' : mode === 'login' ? 'Đăng nhập' : 'Tạo tài khoản'}
+        {loading ? t('auth.processing') : mode === 'login' ? t('auth.login') : t('auth.createAccount')}
       </button>
     </form>
   );

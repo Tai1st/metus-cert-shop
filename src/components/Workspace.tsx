@@ -5,25 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Use } from './IconSprite';
 import LogoutButton from './LogoutButton';
-
-const NAV = [
-  { key: 'dashboard', href: '/dashboard', icon: 'i-dashboard', label: 'Tổng quan' },
-  { key: 'orders', href: '/orders', icon: 'i-orders', label: 'Đơn hàng của tôi' },
-  { key: 'sign', href: '/sign', icon: 'i-sign', label: 'Ký ứng dụng IPA' },
-  { key: 'apps', href: '/apps', icon: 'i-apps', label: 'Kho ứng dụng' },
-  { key: 'check', href: '/check', icon: 'i-check', label: 'Kiểm tra chứng chỉ' },
-  { key: 'lookup', href: '/lookup', icon: 'i-lookup', label: 'Tìm đơn hàng' },
-] as const;
-
-const TITLES: Record<string, string> = {
-  dashboard: 'Tổng quan',
-  orders: 'Đơn hàng của tôi',
-  sign: 'Ký ứng dụng IPA',
-  apps: 'Kho ứng dụng',
-  check: 'Kiểm tra chứng chỉ',
-  lookup: 'Tìm đơn hàng',
-  admin: 'Quản lý',
-};
+import { LocaleSwitch } from './LanguagePicker';
+import { useI18n } from '@/lib/i18n';
 
 /** Khung "Không gian của bạn": thanh bên cố định + topbar, dùng cho mọi trang trong tài khoản. */
 export default function Workspace({
@@ -37,8 +20,29 @@ export default function Workspace({
 }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
+
+  const NAV = [
+    { key: 'dashboard', href: '/dashboard', icon: 'i-dashboard', label: t('workspace.navDashboard') },
+    { key: 'orders', href: '/orders', icon: 'i-orders', label: t('workspace.navOrders') },
+    { key: 'sign', href: '/sign', icon: 'i-sign', label: t('workspace.navSign') },
+    { key: 'apps', href: '/apps', icon: 'i-apps', label: t('workspace.navApps') },
+    { key: 'check', href: '/check', icon: 'i-check', label: t('workspace.navCheck') },
+    { key: 'lookup', href: '/lookup', icon: 'i-lookup', label: t('workspace.navLookup') },
+  ] as const;
+
+  const TITLES: Record<string, string> = {
+    dashboard: t('workspace.navDashboard'),
+    orders: t('workspace.navOrders'),
+    sign: t('workspace.navSign'),
+    apps: t('workspace.navApps'),
+    check: t('workspace.navCheck'),
+    lookup: t('workspace.navLookup'),
+    admin: t('workspace.navAdmin'),
+  };
+
   const current = path.split('/').filter(Boolean)[0] || 'dashboard';
-  const title = TITLES[current] || 'Không gian của bạn';
+  const title = TITLES[current] || t('workspace.titleFallback');
 
   useEffect(() => setOpen(false), [path]);
 
@@ -59,7 +63,7 @@ export default function Workspace({
           </span>
         </Link>
 
-        <div className="mb-3 ml-[15px] text-[8px] tracking-[1.5px] text-[#a1ab96]">KHÔNG GIAN CỦA BẠN</div>
+        <div className="mb-3 ml-[15px] text-[8px] tracking-[1.5px] text-[#a1ab96]">{t('workspace.yourSpace')}</div>
         <nav className="grid gap-[5px]">
           {NAV.map((n) => {
             const active = current === n.key;
@@ -84,20 +88,20 @@ export default function Workspace({
               }`}
             >
               <Use id="i-lock" className="icon h-[17px] w-[17px]" />
-              Quản lý
+              {t('workspace.navAdmin')}
             </Link>
           )}
         </nav>
 
         <div className="mb-[17px] mt-auto rounded-[13px] border border-line bg-[#f5f8ef] p-[17px]">
-          <strong className="text-[11px]">Cần một chút hỗ trợ?</strong>
-          <p className="my-2 text-[9px] leading-[1.8] text-[#8c987e]">Metus luôn sẵn sàng giúp bạn cài đặt và sử dụng.</p>
+          <strong className="text-[11px]">{t('workspace.needHelp')}</strong>
+          <p className="my-2 text-[9px] leading-[1.8] text-[#8c987e]">{t('workspace.needHelpDesc')}</p>
           <a href="https://t.me/metusvn" target="_blank" rel="noreferrer" className="flex justify-between text-[10px] font-semibold">
-            Nhắn qua Telegram <span>↗</span>
+            {t('workspace.messageTelegram')}
           </a>
         </div>
         <Link href="/" className="flex items-center gap-2.5 border-t border-line px-3 pt-5 text-[10px] text-[#8e9a80]">
-          ← &nbsp; Quay lại cửa hàng
+          {t('workspace.backToStore')}
         </Link>
       </aside>
 
@@ -106,7 +110,7 @@ export default function Workspace({
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            aria-label="Mở menu"
+            aria-label={t('workspace.openMenu')}
             className="rounded-lg border border-line bg-white p-[7px] lg:hidden"
           >
             <svg viewBox="0 0 24 24" className="icon h-5 w-5">
@@ -114,11 +118,12 @@ export default function Workspace({
             </svg>
           </button>
           <div className="flex items-center gap-3 text-[10px] text-[#97a18c]">
-            <span className="hidden sm:inline">Không gian của bạn</span>
+            <span className="hidden sm:inline">{t('workspace.breadcrumb')}</span>
             <span className="hidden sm:inline">/</span>
             <b className="font-medium text-[#526349]">{title}</b>
           </div>
           <div className="flex items-center gap-3">
+            <LocaleSwitch />
             {user ? (
               <>
                 <div className="hidden items-center gap-2.5 text-[10px] sm:flex">
@@ -131,7 +136,7 @@ export default function Workspace({
               </>
             ) : (
               <Link href="/login" className="rounded-[9px] bg-deep px-4 py-2.5 text-[11px] font-semibold text-white">
-                Đăng nhập
+                {t('workspace.login')}
               </Link>
             )}
           </div>
@@ -140,7 +145,7 @@ export default function Workspace({
         <main className="mx-auto max-w-[1370px] px-[22px] py-[30px] sm:px-9">
           {children}
           <footer className="mt-8 flex justify-between border-t border-line pt-[18px] text-[8px] text-[#a1ac95]">
-            <span>© {new Date().getFullYear()} Metus · Thiết kế cho trải nghiệm của bạn.</span>
+            <span>{t('workspace.copyright', { year: new Date().getFullYear() })}</span>
           </footer>
         </main>
       </div>
