@@ -27,8 +27,8 @@ function IosDialog({ title, body, actions }: { title?: string; body: string; act
       </div>
       <div className="flex border-t border-[#48484a]">
         {actions.map((a) => (
-          <div key={a.label} className={`flex-1 py-1.5 text-[10px] text-[#4a9bff] ${a.hit ? 'font-semibold' : ''}`}>
-            <span className={`rounded px-1 ${a.hit ? ring : ''}`}>{a.label}</span>
+          <div key={a.label} className={`flex-1 overflow-hidden py-1.5 text-[9px] text-[#4a9bff] ${a.hit ? 'font-semibold' : ''}`}>
+            <span className={`whitespace-nowrap rounded px-0.5 ${a.hit ? ring : ''}`}>{a.label}</span>
           </div>
         ))}
       </div>
