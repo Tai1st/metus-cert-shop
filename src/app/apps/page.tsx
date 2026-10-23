@@ -6,7 +6,8 @@ export const dynamic = 'force-dynamic';
 
 export default async function AppsPage() {
   const user = await getMe();
-  const app = user ? await be<AppInfo>('/app') : null;
+  // Không cần đăng nhập để xem thông tin app; chỉ tải/cài mới cần chứng chỉ (BE tự trả canDownload=false khi chưa đủ điều kiện).
+  const app = await be<AppInfo>('/app');
 
   return (
     <div className="mx-auto max-w-[560px]">
@@ -17,22 +18,10 @@ export default async function AppsPage() {
         <p className="mt-1 text-xs text-muted">Ứng dụng đi kèm chứng chỉ bạn đã mua</p>
       </div>
 
-      {!user ? (
-        <Locked
-          title="Đăng nhập để xem kho ứng dụng"
-          desc="Ứng dụng chỉ mở khóa cho tài khoản đã mua chứng chỉ."
-          cta={{ href: '/login?next=/apps', label: 'Đăng nhập' }}
-        />
-      ) : !app?.ok || !app.data.available ? (
+      {!app.ok || !app.data.available ? (
         <Locked title="Chưa có ứng dụng nào được phát hành" desc="Vui lòng quay lại sau." />
-      ) : !app.data.canDownload ? (
-        <Locked
-          title="Mua chứng chỉ để mở khóa"
-          desc={`${app.data.name} đã sẵn sàng, nhưng bạn cần một đơn chứng chỉ đã hoàn tất mới tải được.`}
-          cta={{ href: '/#install', label: 'Mua chứng chỉ' }}
-        />
       ) : (
-        <AppCard app={app.data} />
+        <AppCard app={app.data} loggedIn={Boolean(user)} />
       )}
     </div>
   );
@@ -53,7 +42,7 @@ function Locked({ title, desc, cta }: { title: string; desc: string; cta?: { hre
   );
 }
 
-function AppCard({ app }: { app: AppInfo }) {
+function AppCard({ app, loggedIn }: { app: AppInfo; loggedIn: boolean }) {
   return (
     <div className="rounded-[26px] border border-line bg-white p-6 shadow-[0_2px_18px_#1428280a] sm:p-7">
       <div className="flex items-center gap-4">
@@ -74,29 +63,47 @@ function AppCard({ app }: { app: AppInfo }) {
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-3">
-        <a
-          href="/api/cert-shop/app/download"
-          className="flex items-center justify-center rounded-full border border-[#d8dfd9] bg-white py-3.5 text-sm font-bold hover:bg-[#edf2e9]"
+      {!loggedIn ? (
+        <Link
+          href="/login?next=/apps"
+          className="mt-6 flex items-center justify-center rounded-full bg-mint py-3.5 text-sm font-bold text-[#20321a] hover:bg-mint-dark"
         >
-          IPA
-        </a>
-        <InstallButton />
-      </div>
+          Đăng nhập để tải
+        </Link>
+      ) : !app.canDownload ? (
+        <Link
+          href="/#install"
+          className="mt-6 flex items-center justify-center rounded-full bg-mint py-3.5 text-sm font-bold text-[#20321a] hover:bg-mint-dark"
+        >
+          Mua chứng chỉ để mở khóa
+        </Link>
+      ) : (
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <a
+            href="/api/cert-shop/app/download"
+            className="flex items-center justify-center rounded-full border border-[#d8dfd9] bg-white py-3.5 text-sm font-bold hover:bg-[#edf2e9]"
+          >
+            IPA
+          </a>
+          <InstallButton />
+        </div>
+      )}
 
-      <div className="mt-6 space-y-3 border-t border-line pt-5 text-xs leading-[1.8] text-muted">
-        <p>
-          <b className="text-ink">Cài đặt</b> — tự ký app bằng chứng chỉ bạn đã mua và mở thẳng màn hình cài đặt trên Safari, không cần làm gì
-          thêm.
-        </p>
-        <p>
-          <b className="text-ink">IPA</b> — chỉ tải file gốc chưa ký. Dùng khi bạn muốn tự chọn chứng chỉ khác ở trang{' '}
-          <Link href="/sign" className="font-semibold text-accent">
-            Ký IPA
-          </Link>
-          .
-        </p>
-      </div>
+      {app.canDownload && (
+        <div className="mt-6 space-y-3 border-t border-line pt-5 text-xs leading-[1.8] text-muted">
+          <p>
+            <b className="text-ink">Cài đặt</b> — tự ký app bằng chứng chỉ bạn đã mua và mở thẳng màn hình cài đặt trên Safari, không cần làm
+            gì thêm.
+          </p>
+          <p>
+            <b className="text-ink">IPA</b> — chỉ tải file gốc chưa ký. Dùng khi bạn muốn tự chọn chứng chỉ khác ở trang{' '}
+            <Link href="/sign" className="font-semibold text-accent">
+              Ký IPA
+            </Link>
+            .
+          </p>
+        </div>
+      )}
       <p className="mt-3 text-[10px] text-muted">Ứng dụng chỉ chạy trên đúng thiết bị có UDID đã đăng ký trong đơn chứng chỉ của bạn.</p>
     </div>
   );
