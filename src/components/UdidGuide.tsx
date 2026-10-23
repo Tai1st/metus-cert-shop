@@ -167,14 +167,25 @@ const IPHONE: Step[] = [
   },
 ];
 
+function FigureImg({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="mt-4 overflow-hidden rounded-xl border border-line">
+      {/* eslint-disable-next-line @next/next/no-img-element -- ảnh minh họa lấy trực tiếp từ CDN chính thức của 3u.com, không tải về lưu lại */}
+      <img src={src} alt={alt} loading="lazy" className="block w-full" />
+    </div>
+  );
+}
+
 const THREEU: Step[] = [
   {
     t: 'Kết nối iPhone với 3uTools',
     d: (
       <>
         Cài 3uTools trên máy tính, cắm iPhone bằng cáp USB, mở khóa và chọn <b>Tin cậy máy tính này</b> nếu được hỏi.
+        Khi đã kết nối, bạn có thể xem loại sản phẩm, mã máy, IMEI, số sê-ri, UDID và nhiều thông tin khác.
       </>
     ),
+    fig: <FigureImg src="https://dl-image.3u.com/upload/20160930/1475228216405008115.jpg" alt="Xem thông tin cơ bản của iPhone trong 3uTools" />,
   },
   {
     t: 'Cập nhật thông tin thiết bị',
@@ -183,6 +194,7 @@ const THREEU: Step[] = [
         Nhấn <b>Refresh iDevice Info</b>, rồi <b>View iDevice Details</b> nếu cần xem thêm.
       </>
     ),
+    fig: <FigureImg src="https://dl-image.3u.com/upload/20160930/1475228244734042723.jpg" alt="Cập nhật thông tin iPhone trong 3uTools" />,
   },
   {
     t: 'Sao chép toàn bộ UDID',
@@ -192,6 +204,7 @@ const THREEU: Step[] = [
         nên dùng cách lấy bằng hồ sơ trên iPhone nếu có thể.
       </>
     ),
+    fig: <FigureImg src="https://dl-image.3u.com/upload/20160930/1475228269062047404.jpg" alt="Xem thông tin chi tiết của iPhone trong 3uTools" />,
   },
 ];
 
