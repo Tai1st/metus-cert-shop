@@ -1,6 +1,7 @@
 'use client';
 
-import { fmtSize, type AppInfo } from '@/lib/api';
+import { fmtSize } from '@/lib/format';
+import type { AppInfo } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 
 /** Thẻ tải Metus Browser (IPA chưa ký) cho khách đã có chứng chỉ. */

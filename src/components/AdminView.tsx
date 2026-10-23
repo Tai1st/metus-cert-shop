@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { vnd, type AppInfo } from '@/lib/api';
+import { vnd } from '@/lib/format';
+import type { AppInfo } from '@/lib/api';
 import AdminAppUpload from './AdminAppUpload';
 import AdminConfirm from './AdminConfirm';
 import { Use } from './IconSprite';

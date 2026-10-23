@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { fmtSize } from '@/lib/api';
+import { fmtSize } from '@/lib/format';
 import { Use } from './IconSprite';
 import InstallButton from './InstallButton';
 import { Card, PageHead, ResultEmpty } from './ui';
