@@ -4,7 +4,7 @@ import { fmtSize, type AppInfo } from '@/lib/api';
 export default function AppDownload({ app }: { app: AppInfo }) {
   if (!app.available || !app.canDownload) return null;
   return (
-    <div className="space-y-4 rounded-xl border border-line bg-white p-4 text-sm">
+    <div className="space-y-4 rounded-2xl border border-line bg-white p-[23px] text-sm shadow-[0_5px_24px_#21361703]">
       <h2 className="text-[11px] font-bold tracking-[2px] text-accent">BƯỚC CUỐI · CÀI ỨNG DỤNG</h2>
       <div className="flex items-center justify-between gap-3">
         <div>

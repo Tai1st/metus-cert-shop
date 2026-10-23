@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import OrderStatus from './OrderStatus';
+import { Use } from './IconSprite';
+import { Badge, Card, PageHead, ResultEmpty } from './ui';
 
 interface Row {
   code: string;
@@ -42,69 +43,70 @@ export default function LookupForm() {
   }
 
   return (
-    <div className="mx-auto grid max-w-[900px] gap-8 lg:grid-cols-[400px_1fr]">
-      <div className="rounded-[26px] border border-line bg-white p-6 shadow-[0_2px_18px_#1428280a] sm:p-7">
-        <h1 className="text-center text-[30px] font-extrabold tracking-tight">
-          <span className="text-[#1d7cf2]">Tìm </span>
-          <span className="text-[#f26b1d]">đơn hàng</span>
-        </h1>
-        <p className="mb-6 mt-1 text-center text-xs text-muted">Kiểm tra đơn hàng bằng UDID hoặc mã đơn hàng</p>
-        <form onSubmit={submit}>
-          <label className="mb-2 block text-center text-[11px] font-semibold" htmlFor="q">
-            Nhập thông tin
-          </label>
-          <input
-            id="q"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Nhập UDID hoặc mã đơn hàng"
-            autoComplete="off"
-            required
-            className="mb-5 w-full rounded-[14px] border border-[#e1e7e0] bg-[#f6f8f4] px-4 py-3 text-xs outline-none focus:border-[#6c9b44] focus:shadow-[0_0_0_3px_#c7f36b35]"
-          />
-          {error && (
-            <p role="alert" className="mb-3 text-xs text-[#b63838]">
-              {error}
-            </p>
-          )}
-          <button disabled={busy} className="w-full rounded-full bg-[#2a86ff] p-4 text-sm font-bold text-white transition hover:bg-[#1f78ee] disabled:opacity-60">
-            {busy ? 'Đang tìm…' : 'Tìm kiếm'}
-          </button>
-        </form>
-      </div>
+    <div>
+      <PageHead title="Tìm đơn hàng" sub="Tra cứu đơn bằng UDID hoặc mã đơn để tiếp tục trải nghiệm." />
+      <div className="grid gap-5 lg:grid-cols-[1fr_1.45fr]">
+        <Card>
+          <span className="mb-5 grid h-[52px] w-[52px] place-items-center rounded-2xl bg-[#e5efce] text-[#719b3f]">
+            <Use id="i-lookup" className="icon h-6 w-6" />
+          </span>
+          <h2 className="text-[15px] tracking-[-0.4px]">Bạn đang tìm đơn nào?</h2>
+          <p className="mt-3 text-[11px] leading-[1.8] text-muted">Nhập mã đơn hoặc UDID thiết bị. Thông tin sẽ hiển thị ở vùng kết quả bên cạnh.</p>
+          <form onSubmit={submit} className="mt-6">
+            <label className="mb-[9px] block text-[10px] font-medium" htmlFor="q">
+              UDID hoặc mã đơn hàng
+            </label>
+            <input
+              id="q"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Ví dụ: MC7A2F9B"
+              autoComplete="off"
+              required
+              className="mb-3 min-h-[43px] w-full rounded-[10px] border border-line bg-gradient-to-b from-[#fafbf8] to-[#f4f6ef] px-3.5 py-3 text-[10px] outline-none focus:border-[#9cba72] focus:shadow-[0_0_0_3px_#d0e5ad30]"
+            />
+            {error && (
+              <p role="alert" className="mb-3 text-[10px] text-[#b45b45]">
+                {error}
+              </p>
+            )}
+            <button disabled={busy} className="flex w-full items-center justify-center gap-2.5 rounded-[9px] bg-deep py-3 text-[10px] font-semibold text-white hover:bg-deep-dark disabled:opacity-60">
+              <Use id="i-lookup" className="icon h-[15px] w-[15px]" /> {busy ? 'Đang tìm…' : 'Tìm đơn hàng'}
+            </button>
+          </form>
+        </Card>
 
-      <div className="min-w-0 self-start pt-4 lg:pt-8">
-        {rows === null && (
-          <div className="text-center">
-            <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-[#eef1ee] text-2xl text-[#8f9a99]">▤</div>
-            <p className="text-lg font-semibold">Chưa có kết quả</p>
-            <p className="mt-1 text-xs text-muted">Nhập UDID hoặc mã đơn rồi nhấn tìm kiếm để xem thông tin đơn hàng</p>
+        <Card className="min-h-[310px]">
+          <div className="mb-[22px] flex items-center justify-between">
+            <h2 className="text-[15px] tracking-[-0.4px]">Kết quả tra cứu</h2>
           </div>
-        )}
-        {rows?.length === 0 && (
-          <div className="text-center">
-            <p className="text-lg font-semibold">Không tìm thấy đơn hàng</p>
-            <p className="mt-1 text-xs text-muted">Kiểm tra lại UDID hoặc mã đơn (phải nhập đầy đủ, chính xác).</p>
-          </div>
-        )}
-        <div className="space-y-3">
-          {rows?.map((o) => (
-            <div key={o.code} className="rounded-2xl border border-line bg-white p-4 text-xs">
-              <div className="flex items-center justify-between gap-3">
-                <b className="font-mono text-sm">{o.code}</b>
-                <OrderStatus status={o.status} />
-              </div>
-              <div className="mt-2 space-y-1 text-muted">
-                <div>{o.planTitle}</div>
-                <div className="font-mono">{o.udid}</div>
-                <div>Tạo lúc {new Date(o.createdAt).toLocaleString('vi-VN')}</div>
-              </div>
+          {rows === null ? (
+            <ResultEmpty icon={<Use id="i-orders" className="icon h-8 w-8" />} title="Chưa có kết quả">
+              Nhập UDID hoặc mã đơn và chọn tìm kiếm. Chi tiết đơn hàng sẽ hiển thị tại đây.
+            </ResultEmpty>
+          ) : rows.length === 0 ? (
+            <ResultEmpty icon={<Use id="i-lookup" className="icon h-8 w-8" />} title="Chưa tìm thấy đơn hàng">
+              Kiểm tra lại UDID hoặc mã đơn (phải nhập đầy đủ, chính xác).
+            </ResultEmpty>
+          ) : (
+            <div className="space-y-3">
+              {rows.map((o) => (
+                <div key={o.code} className="rounded-xl border border-[#e2ebd6] bg-[#f7faf2] p-[22px] text-[10px]">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="font-mono text-sm">{o.code}</h3>
+                    <Badge status={o.status} />
+                  </div>
+                  <div className="mt-2.5 space-y-1.5 text-muted">
+                    <div>{o.planTitle}</div>
+                    <div className="font-mono">{o.udid}</div>
+                    <div>Tạo lúc {new Date(o.createdAt).toLocaleString('vi-VN')}</div>
+                  </div>
+                </div>
+              ))}
+              <p className="text-[9px] leading-[1.8] text-muted">Đăng nhập tài khoản đã đặt đơn để xem chi tiết, tải chứng chỉ và ứng dụng.</p>
             </div>
-          ))}
-          {rows && rows.length > 0 && (
-            <p className="text-[10px] leading-[1.7] text-muted">Đăng nhập tài khoản đã đặt đơn để xem chi tiết, tải chứng chỉ và ứng dụng.</p>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

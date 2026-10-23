@@ -2,15 +2,21 @@
 
 @theme {
   --font-sans: var(--font-be-vietnam), system-ui, sans-serif;
-  --color-ink: #142b2c;
-  --color-ink-dark: #0e2021;
-  --color-mint: #c7f36b;
-  --color-mint-dark: #b8e957;
+  /* Bảng màu theo bản thiết kế Metus App Store (24/10/2026) */
+  --color-ink: #162a24;
+  --color-deep: #112b24;
+  --color-deep-dark: #0c221c;
+  --color-lime: #bdeb75;
+  --color-lime-dark: #aee05e;
   --color-accent: #4f733d;
   --color-tint: #f3f8ed;
-  --color-line: #e4e9e5;
-  --color-muted: #748181;
-  --color-paper: #f8faf7;
+  --color-line: #e2e6de;
+  --color-muted: #7b857e;
+  --color-paper: #f7f8f4;
+  /* Giữ tên cũ (mint/ink-dark/tint) làm alias để không phải sửa lại mọi chỗ đã dùng */
+  --color-mint: var(--color-lime);
+  --color-mint-dark: var(--color-lime-dark);
+  --color-ink-dark: var(--color-deep-dark);
 }
 
 body {
@@ -20,6 +26,17 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline: 2px solid #89b650;
+  outline-offset: 3px;
 }
+
+/* Icon dạng nét (stroke) dùng qua <Use id="i-..." />; đặt riêng lớp .icon để không ảnh hưởng
+   các SVG khác trong trang (vd logo Metus vẽ bằng path riêng). */
+.icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+

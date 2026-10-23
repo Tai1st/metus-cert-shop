@@ -3,6 +3,8 @@
 import { useRef, useState } from 'react';
 import { post, uploadRaw } from '@/lib/client';
 import { fmtSize } from '@/lib/format';
+import { Use } from './IconSprite';
+import { Badge, Card, InfoRow, PageHead, ResultEmpty } from './ui';
 
 export interface QuickApp {
   slug: string;
@@ -30,8 +32,8 @@ interface JobView {
 }
 
 const field =
-  'w-full rounded-[14px] border border-[#e1e7e0] bg-[#f6f8f4] px-4 py-3 text-xs outline-none focus:border-[#6c9b44] focus:shadow-[0_0_0_3px_#c7f36b35]';
-const label = 'mb-2 block text-[11px] font-semibold';
+  'min-h-[43px] w-full rounded-[10px] border border-line bg-gradient-to-b from-[#fafbf8] to-[#f4f6ef] px-3.5 py-3 text-[10px] outline-none focus:border-[#9cba72] focus:shadow-[0_0_0_3px_#d0e5ad30]';
+const label = 'mb-[9px] block text-[10px] font-medium';
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Ảnh cho app ký nhanh đã biết trước; slug khác (admin thêm sau) dùng chữ cái đầu làm biểu tượng.
@@ -140,206 +142,235 @@ export default function SignForm({ status, quickApps }: { status: Status; quickA
     fail('Ký quá lâu, vui lòng thử lại');
   }
 
-  const head = (
-    <div className="mb-6 text-center">
-      <h1 className="text-[34px] font-extrabold tracking-tight">
-        <span className="text-[#1d7cf2]">Ký </span>
-        <span className="text-[#f26b1d]">iPA online</span>
-      </h1>
-      <p className="mt-1 text-sm text-muted">Ký và cài đặt ứng dụng của bạn</p>
-    </div>
-  );
-
   if (!status.signerReady) {
     return (
-      <>
-        {head}
-        <Box>
+      <div>
+        <PageHead title="Ký ứng dụng IPA" sub="Một nơi để chuẩn bị ứng dụng, chứng chỉ và tùy chọn cài đặt." />
+        <Card>
           <p className="text-xs leading-[1.8] text-muted">Công cụ ký đang được chuẩn bị, vui lòng quay lại sau.</p>
-        </Box>
-      </>
+        </Card>
+      </div>
     );
   }
 
   const picked = quickApps.find((a) => a.slug === source);
 
   return (
-    <>
-      {head}
-      <Box>
-        <form onSubmit={submit}>
-          <div className="mb-5">
-            <label className={label}>File ứng dụng</label>
-            <div className="grid grid-cols-5 gap-2">
-              {quickApps.map((a) => (
-                <button
-                  key={a.slug}
-                  type="button"
-                  disabled={busy}
-                  aria-pressed={source === a.slug}
-                  onClick={() => {
-                    setSource(a.slug);
-                    setIpaName('');
-                    if (ipaRef.current) ipaRef.current.value = '';
-                  }}
-                  className={`flex flex-col items-center gap-1.5 rounded-2xl border bg-white py-3 text-[10px] font-semibold disabled:opacity-60 ${
-                    source === a.slug ? 'border-[1.5px] border-accent bg-tint' : 'border-line hover:border-accent'
-                  }`}
-                >
-                  {QUICK_APP_ICONS[a.slug] ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={QUICK_APP_ICONS[a.slug]} alt="" width={44} height={44} className="h-11 w-11 rounded-xl object-cover" />
-                  ) : (
-                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-ink text-sm font-extrabold text-white">
-                      {a.name.slice(0, 1).toUpperCase()}
-                    </span>
-                  )}
-                  {a.name}
-                </button>
-              ))}
+    <div>
+      <PageHead
+        title="Ký ứng dụng IPA"
+        sub="Một nơi để chuẩn bị ứng dụng, chứng chỉ và tùy chọn cài đặt."
+        action={left !== null && <Badge status={left === 0 ? 'failed' : 'completed'} />}
+      />
+
+      <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+        <form onSubmit={submit} className="rounded-2xl border border-line bg-white p-[23px] shadow-[0_5px_24px_#21361703]">
+          <div className="mb-[22px] flex items-center gap-2.5 text-xs font-semibold">
+            <b className="grid h-[25px] w-[25px] place-items-center rounded-lg bg-[#edf4e0] text-[9px] text-[#809a5b]">01</b>
+            Chọn ứng dụng
+          </div>
+          <div className="mb-3 grid grid-cols-3 gap-2.5 sm:grid-cols-4">
+            {quickApps.map((a) => (
               <button
+                key={a.slug}
                 type="button"
                 disabled={busy}
-                aria-pressed={source === ''}
-                onClick={pickOwnFile}
-                className={`flex flex-col items-center gap-1.5 rounded-2xl border bg-white py-3 text-[10px] font-semibold disabled:opacity-60 ${
-                  source === '' ? 'border-[1.5px] border-accent bg-tint' : 'border-line hover:border-accent'
+                aria-pressed={source === a.slug}
+                onClick={() => {
+                  setSource(a.slug);
+                  setIpaName('');
+                  if (ipaRef.current) ipaRef.current.value = '';
+                }}
+                className={`flex min-h-[90px] flex-col items-center justify-center gap-2 rounded-[13px] bg-white p-2.5 text-[9px] text-[#80956c] shadow-[0_4px_12px_#25351b03] disabled:opacity-60 ${
+                  source === a.slug ? 'bg-[#f2f8e9] shadow-[0_0_0_2px_#dcebc729]' : ''
                 }`}
               >
-                <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#f3f5f7] text-2xl text-[#1d7cf2]">⇪</span>
-                Chọn tệp
+                {QUICK_APP_ICONS[a.slug] ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={QUICK_APP_ICONS[a.slug]} alt="" width={40} height={40} className="h-10 w-10 rounded-xl object-cover" />
+                ) : (
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-ink text-xs font-extrabold text-white">
+                    {a.name.slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+                {a.name}
               </button>
-            </div>
-            <input
-              ref={ipaRef}
-              type="file"
-              accept=".ipa"
-              hidden
-              onChange={(e) => {
-                setIpaName(e.target.files?.[0]?.name ?? '');
-                setSource('');
-              }}
-            />
-            <p className="mt-2 truncate text-[10px] text-muted">
-              {picked
-                ? `Dùng ${picked.name}${picked.version ? ` v${picked.version}` : ''} có sẵn trên server, không cần tải lên.`
-                : ipaName
-                  ? `Đã chọn: ${ipaName}`
-                  : `Bấm vào một ứng dụng để ký ngay, hoặc "Chọn tệp" để tải IPA của riêng bạn (tối đa ${status.maxMb} MB).`}
-            </p>
+            ))}
+            <button
+              type="button"
+              disabled={busy}
+              aria-pressed={source === ''}
+              onClick={pickOwnFile}
+              className={`flex min-h-[90px] flex-col items-center justify-center gap-2 rounded-[13px] bg-white p-2.5 text-[9px] text-[#80956c] shadow-[0_4px_12px_#25351b03] disabled:opacity-60 ${
+                source === '' ? 'bg-[#f2f8e9] shadow-[0_0_0_2px_#dcebc729]' : ''
+              }`}
+            >
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#f0f3ed] text-xl text-[#8a9e79]">⇪</span>
+              IPA của bạn
+            </button>
+          </div>
+          <input
+            ref={ipaRef}
+            type="file"
+            accept=".ipa"
+            hidden
+            onChange={(e) => {
+              setIpaName(e.target.files?.[0]?.name ?? '');
+              setSource('');
+            }}
+          />
+          <div className="mb-[12px] rounded-[10px] bg-[#f2f7eb] p-3.5 text-[10px] leading-[1.9] text-[#8b9d75]">
+            {picked
+              ? `Đã chọn ${picked.name}${picked.version ? ` v${picked.version}` : ''} có sẵn trên server, không cần tải lên.`
+              : ipaName
+                ? `Đã chọn: ${ipaName}`
+                : `Bấm vào một ứng dụng để ký ngay, hoặc "IPA của bạn" để tải file riêng (tối đa ${status.maxMb} MB).`}
           </div>
 
-          <div className="mb-5">
-            <div className="mb-2 flex items-center justify-between">
-              <label className="text-[11px] font-semibold">Nhập file chứng chỉ</label>
-              <div className="flex rounded-full bg-[#eef1ec] p-0.5 text-[10px] font-semibold">
-                {(
-                  [
-                    ['zip', 'Gói .zip'],
-                    ['manual', 'Nhập thủ công'],
-                  ] as const
-                ).map(([k, t]) => (
-                  <button
-                    key={k}
-                    type="button"
-                    disabled={busy}
-                    onClick={() => setMode(k)}
-                    className={`rounded-full px-3 py-1 ${mode === k ? 'bg-white text-ink shadow-sm' : 'text-[#7b8874]'}`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
+          <hr className="my-6 border-line" />
 
-            {mode === 'zip' ? (
-              <>
-                <FilePick icon="▤" name={zipName} placeholder="Chọn file chứng chỉ .zip" disabled={busy} onClick={() => zipRef.current?.click()} />
-                <p className="mt-1.5 text-[10px] text-muted">Gói .zip tải ở trang đơn hàng, hoặc gói của bạn, bên trong có file .p12 và .mobileprovision.</p>
-              </>
-            ) : (
-              <div className="space-y-2">
-                <FilePick icon="🔑" name={p12Name} placeholder="Chọn file chứng chỉ .p12" disabled={busy} onClick={() => p12Ref.current?.click()} />
-                <FilePick icon="▤" name={profName} placeholder="Chọn file .mobileprovision" disabled={busy} onClick={() => profRef.current?.click()} />
-                <p className="text-[10px] text-muted">Dùng khi bạn có sẵn chứng chỉ riêng, không cần mua ở shop.</p>
-              </div>
-            )}
-            <input ref={zipRef} type="file" accept=".zip" hidden onChange={(e) => setZipName(e.target.files?.[0]?.name ?? '')} />
-            <input ref={p12Ref} type="file" accept=".p12" hidden onChange={(e) => setP12Name(e.target.files?.[0]?.name ?? '')} />
-            <input ref={profRef} type="file" accept=".mobileprovision" hidden onChange={(e) => setProfName(e.target.files?.[0]?.name ?? '')} />
+          <div className="mb-[22px] flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 text-xs font-semibold">
+              <b className="grid h-[25px] w-[25px] place-items-center rounded-lg bg-[#edf4e0] text-[9px] text-[#809a5b]">02</b>
+              Chọn chứng chỉ
+            </div>
+            <div className="flex gap-[3px] rounded-lg bg-[#f3f6ed] p-1">
+              {(
+                [
+                  ['zip', 'Gói .zip'],
+                  ['manual', 'Nhập thủ công'],
+                ] as const
+              ).map(([k, t]) => (
+                <button
+                  key={k}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => setMode(k)}
+                  className={`rounded-md px-3 py-2 text-[9px] ${mode === k ? 'bg-white font-semibold text-ink shadow-sm' : 'text-[#929f84]'}`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="mb-5">
-            <label className={label} htmlFor="pw">Mật khẩu chứng chỉ</label>
+          {mode === 'zip' ? (
+            <>
+              <FilePick icon="▤" name={zipName} placeholder="Chọn file chứng chỉ .zip" disabled={busy} onClick={() => zipRef.current?.click()} />
+              <p className="mt-2 text-[9px] leading-[1.8] text-[#9aa88a]">Gói .zip tải ở trang đơn hàng, hoặc gói của bạn, bên trong có file .p12 và .mobileprovision.</p>
+            </>
+          ) : (
+            <div className="space-y-2.5">
+              <FilePick icon="🔑" name={p12Name} placeholder="Chọn file chứng chỉ .p12" disabled={busy} onClick={() => p12Ref.current?.click()} />
+              <FilePick icon="▤" name={profName} placeholder="Chọn file .mobileprovision" disabled={busy} onClick={() => profRef.current?.click()} />
+              <p className="text-[9px] leading-[1.8] text-[#9aa88a]">Dùng khi bạn có sẵn chứng chỉ riêng, không cần mua ở shop.</p>
+            </div>
+          )}
+          <input ref={zipRef} type="file" accept=".zip" hidden onChange={(e) => setZipName(e.target.files?.[0]?.name ?? '')} />
+          <input ref={p12Ref} type="file" accept=".p12" hidden onChange={(e) => setP12Name(e.target.files?.[0]?.name ?? '')} />
+          <input ref={profRef} type="file" accept=".mobileprovision" hidden onChange={(e) => setProfName(e.target.files?.[0]?.name ?? '')} />
+
+          <div className="mt-[20px]">
+            <label className={label} htmlFor="pw">
+              Mật khẩu chứng chỉ
+            </label>
             <input id="pw" name="password" type="password" autoComplete="off" placeholder="Nhập mật khẩu nếu có" disabled={busy} className={field} />
           </div>
 
-          <div className="mb-5 grid gap-4 border-t border-line pt-5">
-            <div>
-              <label className={label} htmlFor="bid">Bundle ID (tùy chọn)</label>
-              <input id="bid" name="bundleId" placeholder="Không bắt buộc" disabled={busy} className={field} />
+          <hr className="my-6 border-line" />
+
+          <div className="mb-[22px] flex items-center gap-2.5 text-xs font-semibold">
+            <b className="grid h-[25px] w-[25px] place-items-center rounded-lg bg-[#edf4e0] text-[9px] text-[#809a5b]">03</b>
+            Tùy chọn ứng dụng
+          </div>
+          <div className="flex flex-col gap-3.5 sm:flex-row">
+            <div className="flex-1">
+              <label className={label} htmlFor="bid">
+                Bundle ID <span className="text-muted">(tùy chọn)</span>
+              </label>
+              <input id="bid" name="bundleId" placeholder="com.example.app" disabled={busy} className={field} />
             </div>
-            <div>
-              <label className={label} htmlFor="nm">Tên ứng dụng (tùy chọn)</label>
-              <input id="nm" name="name" maxLength={60} placeholder="Không bắt buộc" disabled={busy} className={field} />
+            <div className="flex-1">
+              <label className={label} htmlFor="nm">
+                Tên ứng dụng <span className="text-muted">(tùy chọn)</span>
+              </label>
+              <input id="nm" name="name" maxLength={60} placeholder="Tên hiển thị" disabled={busy} className={field} />
             </div>
           </div>
 
-          {(step || error) && (
-            <div className="mb-4 rounded-xl bg-[#f7f9f5] p-3 text-xs">
-              {step && (
-                <>
-                  <div className="flex items-center justify-between">
-                    <span>{step}…</span>
-                    {percent !== null && <b>{percent}%</b>}
-                  </div>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#e6ebe4]">
-                    <div
-                      className={`h-full bg-mint transition-all ${percent === null ? 'w-1/3 animate-pulse' : ''}`}
-                      style={percent === null ? undefined : { width: `${percent}%` }}
-                    />
-                  </div>
-                </>
-              )}
-              {error && <p role="alert" className="text-[#b63838]">{error}</p>}
-            </div>
+          {error && (
+            <p role="alert" className="mt-4 text-[10px] leading-[1.8] text-[#b45b45]">
+              {error}
+            </p>
           )}
-
           <button
             disabled={busy || left === 0}
-            className="w-full rounded-full bg-[#2a86ff] p-4 text-sm font-bold text-white transition hover:bg-[#1f78ee] disabled:opacity-60"
+            className="mt-5 w-full rounded-[9px] bg-lime py-3.5 text-xs font-semibold text-[#2b461a] hover:bg-lime-dark disabled:opacity-60"
           >
-            {busy ? 'Đang xử lý…' : left === 0 ? 'Đã hết lượt ký hôm nay' : 'Ký iPA'}
+            {busy ? 'Đang xử lý…' : left === 0 ? 'Đã hết lượt ký hôm nay' : 'Ký ứng dụng'} {!busy && <Use id="i-arrow" className="icon ml-1 inline h-3.5 w-3.5" />}
           </button>
-          <p className="mt-3 text-center text-[9px] leading-[1.7] text-[#8a9587]">
-            Chứng chỉ và mật khẩu không được lưu. File được xóa sau 1 giờ.
-            {left !== null && ` Còn ${left} lượt ký trong 24 giờ.`}
-          </p>
         </form>
 
-        {result?.signed && (
-          <div className="mt-6 space-y-3 rounded-2xl border border-[#cfe0bd] bg-tint p-4 text-xs">
-            <div className="font-bold">✓ Đã ký xong</div>
-            <div className="text-muted">
-              {result.signed.name || result.signed.bundleId} · v{result.signed.version} · {fmtSize(result.signed.size)}
-              <br />
-              <span className="font-mono text-[10px]">{result.signed.bundleId}</span>
+        <div className="space-y-5">
+          <Card>
+            <div className="mb-[22px] flex items-center justify-between">
+              <h2 className="text-[15px] tracking-[-0.4px]">Tiến trình ký</h2>
+              <span className="rounded-full bg-[#eaf3f6] px-2.5 py-1.5 text-[8px] text-[#598496]">
+                {result ? 'Hoàn tất' : busy ? step : 'Chưa bắt đầu'}
+              </span>
             </div>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <a href={result.installUrl} className="rounded-[12px] bg-mint p-3 text-center text-[11px] font-bold text-[#20321a] hover:bg-mint-dark">
-                Cài đặt ngay
-              </a>
-              <a href={result.downloadUrl} className="rounded-[12px] border border-[#d8dfd9] bg-white p-3 text-center text-[11px] font-bold hover:bg-[#edf2e9]">
-                Tải IPA đã ký
-              </a>
-            </div>
-            <p className="text-[10px] leading-[1.7] text-muted">
-              Nút &quot;Cài đặt ngay&quot; chỉ hoạt động khi mở trang bằng Safari trên iPhone, và chứng chỉ phải gồm UDID của thiết bị đó. Liên kết hết hạn sau 1 giờ.
+            {result?.signed ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-xs font-bold">
+                  <Use id="i-check" className="icon h-4 w-4 text-[#7d9a51]" /> Đã ký xong
+                </div>
+                <p className="text-[10px] leading-[1.8] text-muted">
+                  {result.signed.name || result.signed.bundleId} · v{result.signed.version} · {fmtSize(result.signed.size)}
+                  <br />
+                  <span className="font-mono">{result.signed.bundleId}</span>
+                </p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <a href={result.installUrl} className="rounded-[9px] bg-lime py-2.5 text-center text-[10px] font-semibold text-[#2b461a] hover:bg-lime-dark">
+                    Cài đặt ngay
+                  </a>
+                  <a href={result.downloadUrl} className="rounded-[9px] border border-line bg-white py-2.5 text-center text-[10px] font-semibold hover:bg-[#f3f6ed]">
+                    Tải IPA đã ký
+                  </a>
+                </div>
+              </div>
+            ) : busy ? (
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between text-[10px]">
+                  <span>{step}…</span>
+                  {percent !== null && <b>{percent}%</b>}
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-[#e8eddf]">
+                  <div
+                    className={`h-full bg-[#adc981] transition-all ${percent === null ? 'w-1/3 animate-pulse' : ''}`}
+                    style={percent === null ? undefined : { width: `${percent}%` }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <ResultEmpty icon={<Use id="i-sign" className="icon h-8 w-8" />} title="Ứng dụng đang chờ bạn">
+                Chọn ứng dụng và chứng chỉ, rồi bắt đầu ký.
+              </ResultEmpty>
+            )}
+          </Card>
+
+          <Card>
+            <h2 className="mb-[18px] text-[15px] tracking-[-0.4px]">Trước khi bắt đầu</h2>
+            <InfoRow k="Ứng dụng" v="Định dạng .ipa" />
+            <InfoRow k="Chứng chỉ" v=".zip hoặc .p12 + hồ sơ" />
+            <InfoRow k="Thiết bị" v="Khớp UDID trong hồ sơ" />
+            <p className="mt-3 text-[9px] leading-[1.8] text-[#9aa88a]">
+              Chứng chỉ và mật khẩu không được lưu. File được xóa sau 1 giờ.
+              {left !== null && ` Còn ${left} lượt ký trong 24 giờ.`}
             </p>
-          </div>
-        )}
-      </Box>
-    </>
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -350,8 +381,4 @@ function FilePick({ icon, name, placeholder, disabled, onClick }: { icon: string
       <span className="truncate">{name || placeholder}</span>
     </button>
   );
-}
-
-function Box({ children }: { children: React.ReactNode }) {
-  return <div className="mx-auto w-full max-w-[520px] rounded-[26px] border border-line bg-white p-6 shadow-[0_2px_18px_#1428280a] sm:p-7">{children}</div>;
 }

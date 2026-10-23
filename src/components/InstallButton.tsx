@@ -68,7 +68,7 @@ export default function InstallButton({ endpoint = '/app/install' }: { endpoint?
     return (
       <a
         href={ready.installUrl}
-        className="flex items-center justify-center rounded-full bg-mint py-3.5 text-sm font-bold text-[#20321a] hover:bg-mint-dark"
+        className="flex items-center justify-center rounded-[9px] bg-lime py-3 text-center text-[10px] font-semibold text-[#2b461a] hover:bg-lime-dark"
       >
         Cài đặt ngay
       </a>
@@ -81,12 +81,12 @@ export default function InstallButton({ endpoint = '/app/install' }: { endpoint?
         type="button"
         onClick={run}
         disabled={busy}
-        className="flex w-full items-center justify-center rounded-full bg-mint py-3.5 text-sm font-bold text-[#20321a] hover:bg-mint-dark disabled:opacity-60"
+        className="flex w-full items-center justify-center rounded-[9px] bg-lime py-3 text-center text-[10px] font-semibold text-[#2b461a] hover:bg-lime-dark disabled:opacity-60"
       >
         {busy ? msg || 'Đang xử lý…' : 'Cài đặt'}
       </button>
       {error && (
-        <p role="alert" className="mt-2 text-center text-[11px] text-[#b63838]">
+        <p role="alert" className="mt-2 text-center text-[9px] text-[#b45b45]">
           {error}
         </p>
       )}

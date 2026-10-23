@@ -2,6 +2,8 @@
 
 import { useRef, useState } from 'react';
 import { post } from '@/lib/client';
+import { Use } from './IconSprite';
+import { Card, InfoRow, PageHead, ResultEmpty } from './ui';
 
 interface Cert {
   commonName: string;
@@ -32,7 +34,7 @@ interface Result {
 }
 
 const field =
-  'w-full rounded-[14px] border border-[#e1e7e0] bg-[#f6f8f4] px-4 py-3 text-xs outline-none focus:border-[#6c9b44] focus:shadow-[0_0_0_3px_#c7f36b35]';
+  'min-h-[43px] w-full rounded-[10px] border border-line bg-gradient-to-b from-[#fafbf8] to-[#f4f6ef] px-3.5 py-3 text-[10px] outline-none focus:border-[#9cba72] focus:shadow-[0_0_0_3px_#d0e5ad30]';
 const date = (iso?: string) => (iso ? new Date(iso).toLocaleDateString('vi-VN') : '—');
 
 const toBase64 = (file: File) =>
@@ -70,14 +72,14 @@ export default function CheckForm() {
   }
 
   return (
-    <div className="mx-auto grid max-w-[900px] gap-8 lg:grid-cols-[400px_1fr]">
-      <div className="rounded-[26px] border border-line bg-white p-6 shadow-[0_2px_18px_#1428280a] sm:p-7">
-        <h1 className="mb-6 text-center text-[30px] font-extrabold tracking-tight">
-          <span className="text-[#1d7cf2]">Kiểm tra </span>
-          <span className="text-[#f26b1d]">chứng chỉ</span>
-        </h1>
-        <form onSubmit={submit}>
-          <label className="mb-2 block text-[11px] font-semibold">Nhập file chứng chỉ</label>
+    <div>
+      <PageHead title="Kiểm tra chứng chỉ" sub="Xem thông tin và trạng thái chứng chỉ trong một giao diện rõ ràng." />
+      <div className="grid gap-5 lg:grid-cols-2">
+        <form onSubmit={submit} className="rounded-2xl border border-line bg-white p-[23px] shadow-[0_5px_24px_#21361703]">
+          <div className="mb-[22px] flex items-center gap-2.5 text-xs font-semibold">
+            <Use id="i-check" className="icon h-[18px] w-[18px] text-[#5b7150]" /> Thông tin chứng chỉ
+          </div>
+          <label className="mb-[9px] block text-[10px] font-medium">Nhập file chứng chỉ</label>
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
@@ -89,29 +91,37 @@ export default function CheckForm() {
           </button>
           <input ref={fileRef} type="file" accept=".zip" hidden onChange={(e) => setName(e.target.files?.[0]?.name ?? '')} />
 
-          <label className="mb-2 block text-[11px] font-semibold" htmlFor="pw">
+          <label className="mb-[9px] block text-[10px] font-medium" htmlFor="pw">
             Mật khẩu chứng chỉ
           </label>
-          <input id="pw" name="password" type="password" autoComplete="off" placeholder="Nhập mật khẩu nếu có" disabled={busy} className={`${field} mb-6`} />
+          <input id="pw" name="password" type="password" autoComplete="off" placeholder="Nhập mật khẩu nếu có" disabled={busy} className={`${field} mb-5`} />
+
+          <div className="mb-5 rounded-[10px] border border-[#e7efd9] bg-[#f2f7eb] p-3.5 text-[10px] leading-[1.9] text-[#8b9d75]">
+            Chứng chỉ và mật khẩu chỉ dùng để đọc thông tin, không được lưu.
+          </div>
 
           {error && (
-            <p role="alert" className="mb-3 text-xs text-[#b63838]">
+            <p role="alert" className="mb-3 text-[10px] text-[#b45b45]">
               {error}
             </p>
           )}
-          <button disabled={busy} className="w-full rounded-full bg-[#2a86ff] p-4 text-sm font-bold text-white transition hover:bg-[#1f78ee] disabled:opacity-60">
-            {busy ? 'Đang kiểm tra…' : 'Kiểm tra'}
+          <button disabled={busy} className="flex w-full items-center justify-center gap-2.5 rounded-[9px] bg-deep py-3 text-[10px] font-semibold text-white hover:bg-deep-dark disabled:opacity-60">
+            {busy ? 'Đang kiểm tra…' : 'Xem kết quả'}
           </button>
-          <p className="mt-3 text-center text-[9px] leading-[1.7] text-[#8a9587]">Chứng chỉ và mật khẩu chỉ dùng để đọc thông tin, không được lưu.</p>
         </form>
-      </div>
 
-      <div className="min-w-0 self-start">
-        {!result ? (
-          <p className="pt-10 text-center text-2xl font-semibold text-[#8f9a99] lg:pt-16">Chưa có kết quả</p>
-        ) : (
-          <ResultView r={result} />
-        )}
+        <Card>
+          <div className="mb-[22px] flex items-center justify-between">
+            <h2 className="text-[15px] tracking-[-0.4px]">Kết quả kiểm tra</h2>
+          </div>
+          {!result ? (
+            <ResultEmpty icon={<Use id="i-check" className="icon h-8 w-8" />} title="Chưa có kết quả">
+              Chọn chứng chỉ để xem thử thông tin, thời hạn và trạng thái.
+            </ResultEmpty>
+          ) : (
+            <ResultView r={result} />
+          )}
+        </Card>
       </div>
     </div>
   );
@@ -124,66 +134,42 @@ function ResultView({ r }: { r: Result }) {
   const profOk = p && !p.error && !p.expired && p.matchesCert !== false;
   const good = certOk && (p ? profOk : true);
   return (
-    <div className="space-y-4 text-xs">
-      <div className={`rounded-2xl p-4 text-sm font-bold ${good ? 'bg-[#e7f6d4] text-[#2f5a13]' : 'bg-[#fde8e4] text-[#9a2b1b]'}`}>
+    <div className="space-y-4">
+      <div className={`rounded-xl p-3.5 text-[11px] font-bold ${good ? 'bg-[#edf5e3] text-[#598436]' : 'bg-[#fbe9e6] text-[#9a2b1b]'}`}>
         {good ? '✓ Chứng chỉ còn hạn sử dụng' : '✕ Chứng chỉ có vấn đề, xem chi tiết bên dưới'}
       </div>
 
-      <Card title="Chứng chỉ (.p12)">
-        <Row k="Tên" v={c.commonName || '—'} />
-        <Row k="Loại" v={c.type || '—'} />
-        <Row k="Tổ chức" v={c.organization || '—'} />
-        <Row k="Team ID" v={c.teamId || '—'} mono />
-        <Row k="Hiệu lực" v={`${date(c.notBefore)} → ${date(c.notAfter)}`} />
-        <Row
-          k="Còn lại"
-          v={c.notYetValid ? 'Chưa đến ngày hiệu lực' : c.expired ? `Đã hết hạn ${-c.daysLeft} ngày` : `${c.daysLeft} ngày`}
-          bad={c.expired || c.notYetValid}
-        />
-      </Card>
+      <section>
+        <h3 className="mb-1 text-[9px] font-bold tracking-[1.5px] text-accent">CHỨNG CHỈ (.P12)</h3>
+        <InfoRow k="Tên" v={c.commonName || '—'} />
+        <InfoRow k="Loại" v={c.type || '—'} />
+        <InfoRow k="Tổ chức" v={c.organization || '—'} />
+        <InfoRow k="Team ID" v={c.teamId || '—'} mono />
+        <InfoRow k="Hiệu lực" v={`${date(c.notBefore)} → ${date(c.notAfter)}`} />
+        <InfoRow k="Còn lại" v={c.notYetValid ? 'Chưa đến ngày hiệu lực' : c.expired ? `Đã hết hạn ${-c.daysLeft} ngày` : `${c.daysLeft} ngày`} />
+      </section>
 
       {p && (
-        <Card title="Hồ sơ cấp phép (.mobileprovision)">
+        <section className="border-t border-line pt-4">
+          <h3 className="mb-1 text-[9px] font-bold tracking-[1.5px] text-accent">HỒ SƠ CẤP PHÉP (.MOBILEPROVISION)</h3>
           {p.error ? (
-            <p className="text-[#b63838]">{p.error}</p>
+            <p className="text-[10px] text-[#b45b45]">{p.error}</p>
           ) : (
             <>
-              <Row k="Tên hồ sơ" v={p.name || '—'} />
-              <Row k="Team" v={p.teamName || '—'} />
-              <Row k="App ID" v={p.appId || '—'} mono />
-              <Row k="Hết hạn" v={date(p.expires)} />
-              <Row
-                k="Còn lại"
-                v={p.expired ? `Đã hết hạn ${-(p.daysLeft ?? 0)} ngày` : p.daysLeft != null ? `${p.daysLeft} ngày` : '—'}
-                bad={p.expired}
-              />
-              <Row k="Thiết bị" v={p.allDevices ? 'Mọi thiết bị (chứng chỉ doanh nghiệp)' : `${p.devices ?? 0} thiết bị đã đăng ký`} />
-              <Row k="Khớp với .p12" v={p.matchesCert ? 'Có' : 'Không, ký xong sẽ không cài được'} bad={p.matchesCert === false} />
+              <InfoRow k="Tên hồ sơ" v={p.name || '—'} />
+              <InfoRow k="Team" v={p.teamName || '—'} />
+              <InfoRow k="App ID" v={p.appId || '—'} mono />
+              <InfoRow k="Hết hạn" v={date(p.expires)} />
+              <InfoRow k="Còn lại" v={p.expired ? `Đã hết hạn ${-(p.daysLeft ?? 0)} ngày` : p.daysLeft != null ? `${p.daysLeft} ngày` : '—'} />
+              <InfoRow k="Thiết bị" v={p.allDevices ? 'Mọi thiết bị (chứng chỉ doanh nghiệp)' : `${p.devices ?? 0} thiết bị đã đăng ký`} />
+              <InfoRow k="Khớp với .p12" v={p.matchesCert ? 'Có' : 'Không, ký xong sẽ không cài được'} />
             </>
           )}
-        </Card>
+        </section>
       )}
-      <p className="text-[10px] leading-[1.7] text-muted">
+      <p className="border-t border-line pt-4 text-[9px] leading-[1.8] text-muted">
         Kết quả chỉ dựa trên nội dung và hạn dùng trong file. Công cụ chưa kiểm tra việc Apple có thu hồi chứng chỉ hay không, nên chứng chỉ vẫn có thể không dùng được dù còn hạn.
       </p>
-    </div>
-  );
-}
-
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-2xl border border-line bg-white p-4">
-      <h2 className="mb-3 text-[11px] font-bold tracking-[1.5px] text-accent">{title.toUpperCase()}</h2>
-      <div className="space-y-2">{children}</div>
-    </section>
-  );
-}
-
-function Row({ k, v, mono, bad }: { k: string; v: string; mono?: boolean; bad?: boolean }) {
-  return (
-    <div className="flex justify-between gap-4">
-      <span className="shrink-0 text-muted">{k}</span>
-      <span className={`break-all text-right font-medium ${mono ? 'font-mono' : ''} ${bad ? 'text-[#b63838]' : ''}`}>{v}</span>
     </div>
   );
 }
