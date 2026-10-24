@@ -147,6 +147,8 @@ export const vi = {
     somethingWrong: 'Có lỗi xảy ra',
     yes: 'Có',
     logout: 'Đăng xuất',
+    copy: 'Sao chép',
+    copied: 'Đã sao chép',
     status: {
       awaiting_payment: 'Chờ thanh toán',
       paid: 'Đã thanh toán',

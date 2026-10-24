@@ -149,6 +149,8 @@ export const en: Messages = {
     somethingWrong: 'Something went wrong',
     yes: 'Yes',
     logout: 'Log out',
+    copy: 'Copy',
+    copied: 'Copied',
     status: {
       awaiting_payment: 'Awaiting payment',
       paid: 'Paid',

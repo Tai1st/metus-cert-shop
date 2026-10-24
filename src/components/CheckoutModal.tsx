@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { post } from '@/lib/client';
 import type { Plan } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
+import CopyButton from './CopyButton';
 
 export interface Enroll {
   token: string;
@@ -127,7 +128,10 @@ export default function CheckoutModal({
             <div className="mb-4">
               <label className={label}>{t('checkout.yourUdid')}</label>
               {enroll ? (
-                <div className="break-all rounded-[14px] border border-[#cfe0bd] bg-tint px-4 py-3 font-mono text-[11px]">{enroll.udid}</div>
+                <div className="flex items-center gap-2 rounded-[14px] border border-[#cfe0bd] bg-tint px-4 py-3">
+                  <div className="min-w-0 flex-1 break-all font-mono text-[11px]">{enroll.udid}</div>
+                  <CopyButton value={enroll.udid} />
+                </div>
               ) : (
                 <div className={`${field} text-[#9aa89a]`}>{t('checkout.udidPlaceholder')}</div>
               )}

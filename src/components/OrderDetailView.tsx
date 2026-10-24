@@ -5,6 +5,7 @@ import { Use } from './IconSprite';
 import OrderActions from './OrderActions';
 import { Badge, Card, InfoRow, Message } from './ui';
 import { useI18n } from '@/lib/i18n';
+import CopyButton from './CopyButton';
 
 interface Order {
   code: string;
@@ -78,9 +79,23 @@ export default function OrderDetailView({ order }: { order: Order }) {
               </span>
             </div>
             <InfoRow k={t('checkout.certPlan')} v={order.planTitle} />
-            <InfoRow k="UDID" v={order.udid} mono />
+            <div className="my-[17px] flex items-center justify-between gap-5 text-[10px]">
+              <span className="text-[#94a086]">UDID</span>
+              <span className="flex items-center gap-1.5">
+                <strong className="overflow-wrap-anywhere text-right font-mono font-medium text-[#4c6040]">{order.udid}</strong>
+                <CopyButton value={order.udid} />
+              </span>
+            </div>
             <InfoRow k={t('checkout.total')} v={`${order.price.toLocaleString('vi-VN')}đ`} />
-            {order.p12Password && <InfoRow k={t('orderDetail.p12Password')} v={order.p12Password} mono />}
+            {order.p12Password && (
+              <div className="my-[17px] flex items-center justify-between gap-5 text-[10px]">
+                <span className="text-[#94a086]">{t('orderDetail.p12Password')}</span>
+                <span className="flex items-center gap-1.5">
+                  <strong className="overflow-wrap-anywhere text-right font-mono font-medium text-[#4c6040]">{order.p12Password}</strong>
+                  <CopyButton value={order.p12Password} />
+                </span>
+              </div>
+            )}
           </Card>
         </div>
 
