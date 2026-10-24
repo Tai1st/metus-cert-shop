@@ -11,11 +11,9 @@ import { useI18n } from '@/lib/i18n';
 /** Khung "Không gian của bạn": thanh bên cố định + topbar, dùng cho mọi trang trong tài khoản. */
 export default function Workspace({
   user,
-  isAdmin,
   children,
 }: {
   user: { username: string } | null;
-  isAdmin: boolean;
   children: React.ReactNode;
 }) {
   const path = usePathname();
@@ -38,7 +36,6 @@ export default function Workspace({
     apps: t('workspace.navApps'),
     check: t('workspace.navCheck'),
     lookup: t('workspace.navLookup'),
-    admin: t('workspace.navAdmin'),
   };
 
   const current = path.split('/').filter(Boolean)[0] || 'dashboard';
@@ -80,17 +77,6 @@ export default function Workspace({
               </Link>
             );
           })}
-          {isAdmin && (
-            <Link
-              href="/admin"
-              className={`flex items-center gap-3 rounded-[9px] px-[15px] py-[13px] text-[11px] ${
-                current === 'admin' ? 'bg-[#ecf4e1] font-semibold text-[#355b20]' : 'text-[#7f8c75] hover:bg-[#f2f6ec]'
-              }`}
-            >
-              <Use id="i-lock" className="icon h-[17px] w-[17px]" />
-              {t('workspace.navAdmin')}
-            </Link>
-          )}
         </nav>
 
         <div className="mb-[17px] mt-auto rounded-[13px] border border-line bg-[#f5f8ef] p-[17px]">
