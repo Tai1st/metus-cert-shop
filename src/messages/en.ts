@@ -216,6 +216,7 @@ export const en: Messages = {
     certIssue: 'Certificate issue: {msg}',
     warrantySent: 'Warranty request sent',
     requestWarranty: 'Request warranty',
+    autoChecking: 'Automatically checking for your transfer — this page updates itself…',
     orderN: 'Order {code}',
     stepPay: 'Payment',
     stepReceiveCert: 'Receive certificate',
