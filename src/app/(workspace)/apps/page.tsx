@@ -13,6 +13,7 @@ interface AppItem {
   size?: number;
   canDownload: boolean;
   remote?: boolean;
+  iconURL?: string;
 }
 
 export default async function AppsPage() {

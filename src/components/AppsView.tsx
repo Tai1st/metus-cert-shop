@@ -18,6 +18,7 @@ interface AppItem {
   canDownload: boolean;
   /** App nhập từ repo.json ngoài, chưa có sẵn trên server: chỉ để tải IPA về, không ký/cài được. */
   remote?: boolean;
+  iconURL?: string;
 }
 
 // Ảnh cho app ký nhanh đã biết trước; app khác (admin thêm sau) dùng chữ cái đầu làm biểu tượng.
@@ -67,7 +68,7 @@ function AppTile({ app, loggedIn }: { app: AppItem; loggedIn: boolean }) {
   const { t } = useI18n();
   const downloadHref = app.kind === 'main' ? '/api/cert-shop/app/download' : `/api/cert-shop/quick-apps/${app.slug}/download`;
   const installEndpoint = app.kind === 'main' ? '/app/install' : `/quick-apps/${app.slug}/install`;
-  const icon = QUICK_APP_ICONS[app.slug];
+  const icon = QUICK_APP_ICONS[app.slug] ?? app.iconURL;
 
   return (
     <Card>
