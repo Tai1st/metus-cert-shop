@@ -1,16 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { Use } from './IconSprite';
 import OrderActions from './OrderActions';
 import { Badge, Card, InfoRow, Message } from './ui';
 import { useI18n } from '@/lib/i18n';
 import CopyButton from './CopyButton';
-import { post } from '@/lib/client';
-
-const POLL_MS = 3000;
 
 interface Order {
   code: string;
@@ -32,24 +27,10 @@ interface Order {
 
 export default function OrderDetailView({ order }: { order: Order }) {
   const { t } = useI18n();
-  const router = useRouter();
   const pay = order.payment;
   const pending = order.status === 'awaiting_payment';
-  const provisioning = order.status === 'provisioning' || order.status === 'paid';
   const active = order.status === 'completed';
   const step = pending ? 1 : active ? 3 : 2;
-  const watching = pending || provisioning;
-
-  // Khách vừa chuyển khoản/đang chờ cấp chứng chỉ: tự làm mới để không phải F5 tay.
-  // "provisioning" còn chủ động kéo trạng thái mới nhất từ nhà cung cấp (webhook có thể chưa tới).
-  useEffect(() => {
-    if (!watching) return;
-    const id = setInterval(() => {
-      if (order.status === 'provisioning') void post(`/orders/${order.code}/sync`);
-      router.refresh();
-    }, POLL_MS);
-    return () => clearInterval(id);
-  }, [watching, order.status, order.code, router]);
 
   return (
     <div>
@@ -144,12 +125,6 @@ export default function OrderDetailView({ order }: { order: Order }) {
           )}
           {(order.status === 'paid' || order.status === 'provisioning') && <Message>{t('orderDetail.processingNote')}</Message>}
           {order.status === 'failed' && <Message amber>{t('orderDetail.failedNote', { code: order.code })}</Message>}
-          {watching && (
-            <p className="mt-3 flex items-center gap-2 text-[10px] text-muted">
-              <span className="h-3 w-3 shrink-0 animate-spin rounded-full border-2 border-[#cfe0bd] border-t-[#5d7e3d]" />
-              {t('orderDetail.autoChecking')}
-            </p>
-          )}
 
           {active && (
             <div className="mt-4">

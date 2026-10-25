@@ -214,7 +214,6 @@ export const vi = {
     certIssue: 'Chứng chỉ có vấn đề: {msg}',
     warrantySent: 'Đã gửi yêu cầu bảo hành',
     requestWarranty: 'Yêu cầu bảo hành',
-    autoChecking: 'Đang tự động kiểm tra giao dịch, trang sẽ tự cập nhật khi có kết quả…',
     orderN: 'Đơn {code}',
     stepPay: 'Thanh toán',
     stepReceiveCert: 'Nhận chứng chỉ',
