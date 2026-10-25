@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import { fmtSize } from '@/lib/format';
 import { Use } from './IconSprite';
 import InstallButton from './InstallButton';
@@ -30,6 +31,13 @@ const QUICK_APP_ICONS: Record<string, string> = {
 export default function AppsView({ items, loggedIn }: { items: AppItem[]; loggedIn: boolean }) {
   const { t } = useI18n();
   const unlocked = items.some((a) => a.canDownload);
+  const [q, setQ] = useState('');
+
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    if (!needle) return items;
+    return items.filter((a) => a.name.toLowerCase().includes(needle) || a.bundleId?.toLowerCase().includes(needle));
+  }, [items, q]);
 
   return (
     <div>
@@ -54,11 +62,31 @@ export default function AppsView({ items, loggedIn }: { items: AppItem[]; logged
           </ResultEmpty>
         </Card>
       ) : (
-        <div className="grid gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((a) => (
-            <AppTile key={a.slug} app={a} loggedIn={loggedIn} />
-          ))}
-        </div>
+        <>
+          <div className="relative mb-[18px]">
+            <Use id="i-search" className="icon pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9aa89a]" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder={t('apps.searchPlaceholder')}
+              className="w-full rounded-[12px] border border-line bg-white py-3 pl-11 pr-4 text-xs outline-none focus:border-[#6c9b44] focus:shadow-[0_0_0_3px_#c7f36b35]"
+            />
+          </div>
+
+          {filtered.length === 0 ? (
+            <Card>
+              <ResultEmpty icon={<Use id="i-search" className="icon h-8 w-8" />} title={t('apps.noResults')}>
+                {t('apps.tryAnotherSearch')}
+              </ResultEmpty>
+            </Card>
+          ) : (
+            <div className="grid gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((a) => (
+                <AppTile key={a.slug} app={a} loggedIn={loggedIn} />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

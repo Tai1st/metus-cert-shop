@@ -203,6 +203,9 @@ export const en: Messages = {
     loginToDownload: 'Log in to download',
     buyToUnlock: 'Buy a certificate to unlock',
     downloadIpa: 'Download IPA',
+    searchPlaceholder: 'Search apps by name...',
+    noResults: 'No apps found',
+    tryAnotherSearch: 'Try a different search term.',
   },
   orderDetail: {
     finalStep: 'FINAL STEP · INSTALL APP',

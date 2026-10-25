@@ -201,6 +201,9 @@ export const vi = {
     loginToDownload: 'Đăng nhập để tải',
     buyToUnlock: 'Mua chứng chỉ để mở khóa',
     downloadIpa: 'Tải IPA về máy',
+    searchPlaceholder: 'Tìm ứng dụng theo tên...',
+    noResults: 'Không tìm thấy ứng dụng nào',
+    tryAnotherSearch: 'Thử từ khóa khác.',
   },
   orderDetail: {
     finalStep: 'BƯỚC CUỐI · CÀI ỨNG DỤNG',
