@@ -10,7 +10,7 @@ import { useI18n } from '@/lib/i18n';
 import CopyButton from './CopyButton';
 import { post } from '@/lib/client';
 
-const POLL_MS = 5000;
+const POLL_MS = 3000;
 
 interface Order {
   code: string;
