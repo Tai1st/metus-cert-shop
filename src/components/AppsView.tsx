@@ -16,6 +16,8 @@ interface AppItem {
   minOs?: string;
   size?: number;
   canDownload: boolean;
+  /** App nhập từ repo.json ngoài, chưa có sẵn trên server: chỉ để tải IPA về, không ký/cài được. */
+  remote?: boolean;
 }
 
 // Ảnh cho app ký nhanh đã biết trước; app khác (admin thêm sau) dùng chữ cái đầu làm biểu tượng.
@@ -91,6 +93,13 @@ function AppTile({ app, loggedIn }: { app: AppItem; loggedIn: boolean }) {
         <Link href="/#install" className="mt-[14px] block rounded-[9px] bg-deep py-3 text-center text-[10px] font-semibold text-white hover:bg-deep-dark">
           {t('apps.buyToUnlock')}
         </Link>
+      ) : app.remote ? (
+        <a
+          href={downloadHref}
+          className="mt-[14px] block rounded-[9px] border border-line bg-white py-3 text-center text-[10px] font-semibold hover:bg-[#f3f6ed]"
+        >
+          {t('apps.downloadIpa')}
+        </a>
       ) : (
         <div className="mt-[14px] grid grid-cols-2 gap-2">
           <a href={downloadHref} className="rounded-[9px] border border-line bg-white py-3 text-center text-[10px] font-semibold hover:bg-[#f3f6ed]">

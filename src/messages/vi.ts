@@ -200,6 +200,7 @@ export const vi = {
     comesWithCert: 'Ứng dụng đi kèm chứng chỉ của bạn.',
     loginToDownload: 'Đăng nhập để tải',
     buyToUnlock: 'Mua chứng chỉ để mở khóa',
+    downloadIpa: 'Tải IPA về máy',
   },
   orderDetail: {
     finalStep: 'BƯỚC CUỐI · CÀI ỨNG DỤNG',

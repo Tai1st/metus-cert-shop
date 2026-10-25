@@ -202,6 +202,7 @@ export const en: Messages = {
     comesWithCert: 'The app comes with your certificate.',
     loginToDownload: 'Log in to download',
     buyToUnlock: 'Buy a certificate to unlock',
+    downloadIpa: 'Download IPA',
   },
   orderDetail: {
     finalStep: 'FINAL STEP · INSTALL APP',

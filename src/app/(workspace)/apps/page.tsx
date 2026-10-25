@@ -12,6 +12,7 @@ interface AppItem {
   minOs?: string;
   size?: number;
   canDownload: boolean;
+  remote?: boolean;
 }
 
 export default async function AppsPage() {
