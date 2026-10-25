@@ -42,11 +42,19 @@ async function send<T>(
   path: string,
   body?: unknown
 ): Promise<{ ok: boolean; data: T; error: string }> {
-  const res = await fetch(`/api/cert-shop${path}`, {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`/api/cert-shop${path}`, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  } catch {
+    // Lỗi mạng (mất kết nối, timeout...) không phải lỗi HTTP: fetch() throw thay vì trả response.
+    // Không bắt ở đây thì nơi gọi awaited promise sẽ văng lỗi, bỏ dở các bước dọn dẹp phía sau (vd setBusy(false)),
+    // làm giao diện kẹt mãi ở trạng thái "đang xử lý" không có thông báo gì.
+    return { ok: false, data: {} as T, error: 'Mất kết nối, vui lòng kiểm tra mạng và thử lại' };
+  }
   const text = await res.text();
   // Cloudflare/nginx có thể trả trang chữ thay vì JSON khi origin lỗi
   let data = {} as T & { message?: string | string[] };
