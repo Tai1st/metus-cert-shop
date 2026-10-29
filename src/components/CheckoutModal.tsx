@@ -35,14 +35,29 @@ export default function CheckoutModal({
   const { t } = useI18n();
   const METHODS = [
     { id: 'vietqr', label: 'VietQR', on: true },
-    { id: 'balance', label: t('checkout.methodBalance'), on: false },
+    { id: 'balance', label: t('checkout.methodBalance'), on: true },
     { id: 'usdt', label: 'USDT', on: false },
     { id: 'paypal', label: 'PayPal', on: false },
-  ];
+  ] as const;
+  const [method, setMethod] = useState<string>('vietqr');
+  const [balanceVnd, setBalanceVnd] = useState<number | null>(null);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const next = `/?plan=${encodeURIComponent(plan.id)}`;
+  const insufficientBalance = method === 'balance' && balanceVnd !== null && balanceVnd < plan.price;
+
+  useEffect(() => {
+    if (!loggedIn) return;
+    let active = true;
+    fetch('/api/cert-shop/wallet')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => active && json?.ok && setBalanceVnd(json.data.balanceVnd))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [loggedIn]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -57,12 +72,13 @@ export default function CheckoutModal({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!enroll) return;
+    if (!enroll || insufficientBalance) return;
     setBusy(true);
     setError('');
     const r = await post<{ code: string }>('/orders', {
       enrollToken: enroll.token,
       planId: plan.id,
+      paymentMethod: method,
       // Để trống thì BE tự tạo mật khẩu ngẫu nhiên
       ...(password.trim() && { p12Password: password.trim() }),
     });
@@ -182,18 +198,33 @@ export default function CheckoutModal({
               <label className={label}>{t('checkout.choosePaymentMethod')}</label>
               <div className="grid grid-cols-2 gap-2">
                 {METHODS.map((m) => (
-                  <div
+                  <button
                     key={m.id}
-                    aria-disabled={!m.on}
+                    type="button"
+                    disabled={!m.on}
+                    aria-pressed={method === m.id}
+                    onClick={() => m.on && setMethod(m.id)}
                     className={`rounded-full border py-2.5 text-center text-xs font-bold ${
-                      m.on ? 'border-[#4f733d] bg-tint text-ink' : 'border-[#e6ebe4] bg-[#f6f8f4] text-[#b0bbb0]'
+                      !m.on
+                        ? 'cursor-default border-[#e6ebe4] bg-[#f6f8f4] text-[#b0bbb0]'
+                        : method === m.id
+                          ? 'border-[#4f733d] bg-mint text-[#20321a]'
+                          : 'border-[#cfe0bd] bg-tint text-ink'
                     }`}
                   >
                     {m.label}
                     {!m.on && <span className="ml-1 text-[9px] font-normal">{t('checkout.comingSoon')}</span>}
-                  </div>
+                  </button>
                 ))}
               </div>
+              {method === 'balance' && (
+                <p className={`mt-1.5 text-[10px] ${insufficientBalance ? 'text-[#b63838]' : 'text-muted'}`}>
+                  {balanceVnd === null
+                    ? t('checkout.balanceLoading')
+                    : t('checkout.balanceCurrent', { vnd: vnd(balanceVnd) })}
+                  {insufficientBalance && ` · ${t('checkout.balanceInsufficient')}`}
+                </p>
+              )}
             </div>
 
             <div className="mb-4 rounded-xl bg-[#f7f9f5] p-4 text-[11px] text-[#748174]">
@@ -207,7 +238,7 @@ export default function CheckoutModal({
 
             <div role="alert" className="mb-2 min-h-3 text-[11px] text-[#b63838]">{error}</div>
             <button
-              disabled={busy || !enroll}
+              disabled={busy || !enroll || insufficientBalance}
               className="flex w-full items-center justify-center gap-3 rounded-[12px] bg-mint p-3.5 text-xs font-bold text-[#20321a] transition hover:bg-mint-dark disabled:opacity-50"
             >
               {busy ? t('checkout.creatingOrder') : enroll ? t('checkout.pay') : t('checkout.getUdidToContinue')} <span>→</span>

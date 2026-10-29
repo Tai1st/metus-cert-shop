@@ -23,6 +23,7 @@ export default function Workspace({
   const NAV = [
     { key: 'dashboard', href: '/dashboard', icon: 'i-dashboard', label: t('workspace.navDashboard') },
     { key: 'orders', href: '/orders', icon: 'i-orders', label: t('workspace.navOrders') },
+    { key: 'wallet', href: '/wallet', icon: 'i-wallet', label: t('workspace.navWallet') },
     { key: 'sign', href: '/sign', icon: 'i-sign', label: t('workspace.navSign') },
     { key: 'apps', href: '/apps', icon: 'i-apps', label: t('workspace.navApps') },
     { key: 'check', href: '/check', icon: 'i-check', label: t('workspace.navCheck') },
@@ -32,6 +33,7 @@ export default function Workspace({
   const TITLES: Record<string, string> = {
     dashboard: t('workspace.navDashboard'),
     orders: t('workspace.navOrders'),
+    wallet: t('workspace.navWallet'),
     sign: t('workspace.navSign'),
     apps: t('workspace.navApps'),
     check: t('workspace.navCheck'),

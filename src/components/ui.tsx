@@ -49,6 +49,10 @@ const STATUS_CLS: Record<string, string> = {
   completed: 'bg-[#edf5e3] text-[#789b43]',
   failed: 'bg-[#fbe9e6] text-[#b45b45]',
   cancelled: 'bg-[#f1f3ee] text-[#7f8c75]',
+  pending: 'bg-[#fff6dc] text-[#a27b28]',
+  credited: 'bg-[#edf5e3] text-[#789b43]',
+  expired: 'bg-[#fbe9e6] text-[#b45b45]',
+  manual_review: 'bg-[#eaf3f6] text-[#598496]',
 };
 
 export function Badge({ status }: { status: string }) {
