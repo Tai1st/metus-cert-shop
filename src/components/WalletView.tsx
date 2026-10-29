@@ -8,12 +8,15 @@ import { Use } from './IconSprite';
 import CopyButton from './CopyButton';
 import { Badge, Card, PageHead, ResultEmpty } from './ui';
 
+export interface WalletNetwork {
+  key: string;
+  label: string;
+  feeUsdt: number;
+}
+
 export interface WalletInfo {
   balanceVnd: number;
-  network: string;
-  networkLabel: string;
-  address: string | null;
-  serviceFeeUsdt: number;
+  networks: WalletNetwork[];
   minUsdt: number;
   maxUsdt: number;
   usdtVndRate: number;
@@ -59,7 +62,7 @@ export default function WalletView({ info, deposits }: { info: WalletInfo | null
             <div className="mb-1 text-[10px] font-bold tracking-[2px] text-accent">{t('wallet.balanceLabel')}</div>
             <div className="text-3xl font-bold tracking-tight">{vnd(refreshBalance)}</div>
           </div>
-          {info.address ? (
+          {info.networks.length > 0 ? (
             <button
               type="button"
               onClick={() => setOpen(true)}
@@ -76,9 +79,8 @@ export default function WalletView({ info, deposits }: { info: WalletInfo | null
         <Card>
           <h2 className="mb-3 text-[13px] font-semibold">{t('wallet.infoTitle')}</h2>
           <div className="space-y-2 text-[11px]">
-            <div className="flex justify-between"><span className="text-muted">{t('wallet.infoNetwork')}</span><strong>{info.networkLabel}</strong></div>
+            <div className="flex justify-between"><span className="text-muted">{t('wallet.infoNetwork')}</span><strong>{info.networks.map((n) => n.label).join(', ') || '—'}</strong></div>
             <div className="flex justify-between"><span className="text-muted">{t('wallet.infoRange')}</span><strong>{info.minUsdt} – {info.maxUsdt} USDT</strong></div>
-            <div className="flex justify-between"><span className="text-muted">{t('wallet.infoFee')}</span><strong>{t('wallet.infoFeeUnit', { fee: info.serviceFeeUsdt })}</strong></div>
             <div className="flex justify-between"><span className="text-muted">{t('wallet.infoRate')}</span><strong>{t('wallet.infoRateValue', { vnd: vnd(info.usdtVndRate) })}</strong></div>
           </div>
         </Card>
@@ -131,12 +133,14 @@ function DepositModal({
   onCreated: (d: Deposit) => void;
 }) {
   const { t } = useI18n();
+  const [network, setNetwork] = useState(info.networks[0]?.key ?? '');
   const [amount, setAmount] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [deposit, setDeposit] = useState<Deposit | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const selectedNet = info.networks.find((n) => n.key === network);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -177,9 +181,13 @@ function DepositModal({
       setError(t('wallet.amountRangeError', { min: info.minUsdt, max: info.maxUsdt }));
       return;
     }
+    if (!network) {
+      setError(t('wallet.networkRequired'));
+      return;
+    }
     setBusy(true);
     setError('');
-    const r = await post<Deposit>('/wallet/deposits', { requestedAmount: n });
+    const r = await post<Deposit>('/wallet/deposits', { requestedAmount: n, network });
     setBusy(false);
     if (!r.ok) return setError(r.error);
     setDeposit(r.data);
@@ -197,10 +205,28 @@ function DepositModal({
           ×
         </button>
         <h2 className="mb-1 mt-1 text-center text-lg font-bold tracking-tight">{t('wallet.modalTitle')}</h2>
-        <p className="mb-5 text-center text-[11px] text-muted">{t('wallet.modalSub', { network: info.networkLabel })}</p>
+        <p className="mb-5 text-center text-[11px] text-muted">{t('wallet.modalSubGeneric')}</p>
 
         {!deposit ? (
           <form onSubmit={submit} className="space-y-4">
+            <div>
+              <label className="mb-2 block text-[11px] font-semibold">{t('wallet.chooseNetwork')}</label>
+              <div className="grid grid-cols-2 gap-2">
+                {info.networks.map((n) => (
+                  <button
+                    key={n.key}
+                    type="button"
+                    onClick={() => setNetwork(n.key)}
+                    className={`rounded-xl border py-2.5 text-center text-xs font-bold ${
+                      network === n.key ? 'border-[#4f733d] bg-mint text-[#20321a]' : 'border-[#cfe0bd] bg-tint text-ink'
+                    }`}
+                  >
+                    {n.label}
+                    <span className="ml-1 text-[9px] font-normal text-muted">{t('wallet.infoFeeUnit', { fee: n.feeUsdt })}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
             <div>
               <label className="mb-2 block text-[11px] font-semibold">{t('wallet.amountLabel')}</label>
               <input
@@ -210,7 +236,7 @@ function DepositModal({
                 placeholder={`${info.minUsdt} – ${info.maxUsdt}`}
                 className="w-full rounded-[14px] border border-[#e1e7e0] bg-[#f6f8f4] px-4 py-3 text-xs outline-none focus:border-[#6c9b44] focus:shadow-[0_0_0_3px_#c7f36b35]"
               />
-              <p className="mt-1.5 text-[10px] text-muted">{t('wallet.amountHint', { fee: info.serviceFeeUsdt })}</p>
+              {selectedNet && <p className="mt-1.5 text-[10px] text-muted">{t('wallet.amountHint', { fee: selectedNet.feeUsdt })}</p>}
             </div>
             {error && <p role="alert" className="text-[11px] text-[#b45b45]">{error}</p>}
             <button

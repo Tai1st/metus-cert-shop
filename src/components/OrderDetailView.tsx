@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Use } from './IconSprite';
 import OrderActions from './OrderActions';
 import { Badge, Card, InfoRow, Message } from './ui';
 import { useI18n } from '@/lib/i18n';
 import CopyButton from './CopyButton';
 import { post } from '@/lib/client';
+import type { Deposit } from './WalletView';
 
 const POLL_MS = 3000;
 
@@ -18,6 +19,7 @@ interface Order {
   planTitle: string;
   price: number;
   status: string;
+  paymentMethod?: string;
   hasProvider: boolean;
   p12Password?: string;
   payment?: {
@@ -27,6 +29,10 @@ interface Order {
     amount: number;
     content: string;
     qrUrl: string;
+  };
+  usdtPayment?: {
+    networks: { key: string; label: string; feeUsdt: number }[];
+    deposit: Deposit | null;
   };
 }
 
@@ -126,7 +132,10 @@ export default function OrderDetailView({ order }: { order: Order }) {
             <Use id={active ? 'i-check' : pending ? 'i-clock' : 'i-sign'} className="icon h-5 w-5 text-[#88a268]" />
           </div>
 
-          {pending && pay && (
+          {pending && order.paymentMethod === 'usdt' && order.usdtPayment && (
+            <UsdtOrderPayment code={order.code} info={order.usdtPayment} onCreated={() => router.refresh()} />
+          )}
+          {pending && order.paymentMethod !== 'usdt' && pay && (
             <div className="space-y-3">
               {pay.qrUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -164,6 +173,108 @@ export default function OrderDetailView({ order }: { order: Order }) {
           </p>
         </Card>
       </div>
+    </div>
+  );
+}
+
+/** Trả trực tiếp bằng USDT cho đơn: chọn mạng (nếu chưa có lượt chuyển) rồi hiện QR/đếm ngược. */
+function UsdtOrderPayment({
+  code,
+  info,
+  onCreated,
+}: {
+  code: string;
+  info: { networks: { key: string; label: string; feeUsdt: number }[]; deposit: Deposit | null };
+  onCreated: () => void;
+}) {
+  const { t } = useI18n();
+  const [network, setNetwork] = useState(info.networks[0]?.key ?? '');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const d = info.deposit;
+  const active = d && d.status === 'pending';
+
+  useEffect(() => {
+    if (!active) return;
+    const tick = () => setSecondsLeft(Math.max(0, Math.round((new Date(d.expiresAt).getTime() - Date.now()) / 1000)));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [active, d]);
+
+  if (!active) {
+    return (
+      <div className="space-y-3">
+        {info.networks.length === 0 ? (
+          <p className="text-[11px] text-[#b45b45]">{t('orderDetail.usdtNoNetwork')}</p>
+        ) : (
+          <>
+            <div>
+              <label className="mb-2 block text-[11px] font-semibold">{t('orderDetail.usdtChooseNetwork')}</label>
+              <div className="grid grid-cols-2 gap-2">
+                {info.networks.map((n) => (
+                  <button
+                    key={n.key}
+                    type="button"
+                    onClick={() => setNetwork(n.key)}
+                    className={`rounded-xl border py-2.5 text-center text-xs font-bold ${
+                      network === n.key ? 'border-[#4f733d] bg-mint text-[#20321a]' : 'border-[#cfe0bd] bg-tint text-ink'
+                    }`}
+                  >
+                    {n.label}
+                    <span className="ml-1 text-[9px] font-normal text-muted">{t('orderDetail.usdtFeeUnit', { fee: n.feeUsdt })}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            {error && <p role="alert" className="text-[11px] text-[#b45b45]">{error}</p>}
+            <button
+              type="button"
+              disabled={busy || !network}
+              onClick={async () => {
+                setBusy(true);
+                setError('');
+                const r = await post(`/orders/${code}/usdt-payment`, { network });
+                setBusy(false);
+                if (!r.ok) return setError(r.error);
+                onCreated();
+              }}
+              className="flex w-full items-center justify-center rounded-xl bg-mint py-3.5 text-xs font-bold text-[#20321a] hover:bg-mint-dark disabled:opacity-50"
+            >
+              {busy ? t('orderDetail.usdtCreating') : t('orderDetail.usdtCreateBtn')}
+            </button>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  const mm = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+  const ss = String(secondsLeft % 60).padStart(2, '0');
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(d.address)}`;
+
+  return (
+    <div className="space-y-3">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={qrUrl} alt={t('wallet.qrAlt')} className="mx-auto h-45 w-45 rounded-lg" />
+      <InfoRow k={t('wallet.expiresIn')} v={`${mm}:${ss}`} mono />
+      <InfoRow k={t('wallet.receivingNetwork')} v={d.networkLabel} />
+      <div className="flex items-center justify-between gap-2 text-[10px]">
+        <span className="shrink-0 text-[#94a086]">{t('wallet.exactAmount')}</span>
+        <span className="flex items-center gap-1.5">
+          <strong className="overflow-wrap-anywhere text-right font-mono font-medium text-[#4c6040]">{d.expectedAmount}</strong>
+          <CopyButton value={d.expectedAmount} />
+        </span>
+      </div>
+      <div className="flex items-center justify-between gap-2 text-[10px]">
+        <span className="shrink-0 text-[#94a086]">{t('wallet.address')}</span>
+        <span className="flex items-center gap-1.5 overflow-hidden">
+          <strong className="truncate font-mono font-medium text-[#4c6040]">{d.address}</strong>
+          <CopyButton value={d.address} />
+        </span>
+      </div>
+      <Message amber>{t('wallet.warningNote', { network: d.networkLabel })}</Message>
     </div>
   );
 }

@@ -36,7 +36,7 @@ export default function CheckoutModal({
   const METHODS = [
     { id: 'vietqr', label: 'VietQR', on: true },
     { id: 'balance', label: t('checkout.methodBalance'), on: true },
-    { id: 'usdt', label: 'USDT', on: false },
+    { id: 'usdt', label: 'USDT', on: true },
     { id: 'paypal', label: 'PayPal', on: false },
   ] as const;
   const [method, setMethod] = useState<string>('vietqr');
