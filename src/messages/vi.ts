@@ -564,7 +564,7 @@ export const vi = {
     receivingNetwork: 'Mạng nhận',
     exactAmount: 'Số tiền chính xác',
     address: 'Địa chỉ',
-    warningNote: 'Gửi đúng mạng {network} và đúng số tiền chính xác ở trên (không làm tròn). Phí chuyển của ví/sàn gửi do bạn tự chịu, không nằm trong số tiền này.',
+    warningNote: 'Quan trọng: hệ thống nhận diện lượt chuyển của bạn CHỈ dựa vào đúng số tiền ở trên — gửi đúng mạng {network} và đúng từng chữ số (không làm tròn, không bớt số lẻ). Nếu chuyển sai số tiền, hệ thống sẽ không tự nhận ra và không tự cộng tiền. Phí chuyển của ví/sàn gửi do bạn tự chịu, không nằm trong số tiền này.',
   },
 };
 

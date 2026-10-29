@@ -258,15 +258,15 @@ function UsdtOrderPayment({
     <div className="space-y-3">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={qrUrl} alt={t('wallet.qrAlt')} className="mx-auto h-45 w-45 rounded-lg" />
+      <div className="rounded-[14px] border-2 border-[#e2b23f] bg-[#fffaee] p-4">
+        <div className="mb-1 text-center text-[9px] font-bold uppercase tracking-wide text-[#a27b28]">{t('wallet.exactAmount')}</div>
+        <div className="flex items-center justify-center gap-2">
+          <strong className="font-mono text-xl text-[#7a5a1a]">{d.expectedAmount}</strong>
+          <CopyButton value={d.expectedAmount} />
+        </div>
+      </div>
       <InfoRow k={t('wallet.expiresIn')} v={`${mm}:${ss}`} mono />
       <InfoRow k={t('wallet.receivingNetwork')} v={d.networkLabel} />
-      <div className="flex items-center justify-between gap-2 text-[10px]">
-        <span className="shrink-0 text-[#94a086]">{t('wallet.exactAmount')}</span>
-        <span className="flex items-center gap-1.5">
-          <strong className="overflow-wrap-anywhere text-right font-mono font-medium text-[#4c6040]">{d.expectedAmount}</strong>
-          <CopyButton value={d.expectedAmount} />
-        </span>
-      </div>
       <div className="flex items-center justify-between gap-2 text-[10px]">
         <span className="shrink-0 text-[#94a086]">{t('wallet.address')}</span>
         <span className="flex items-center gap-1.5 overflow-hidden">

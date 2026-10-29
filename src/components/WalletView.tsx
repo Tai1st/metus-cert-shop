@@ -268,13 +268,16 @@ function DepositModal({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={qrUrl} alt={t('wallet.qrAlt')} className="mx-auto h-45 w-45 rounded-lg" />
             <p className="text-center text-[10px] text-muted">{t('wallet.waitingConfirm')}</p>
+            <div className="rounded-[14px] border-2 border-[#e2b23f] bg-[#fffaee] p-4">
+              <div className="mb-1 text-center text-[9px] font-bold uppercase tracking-wide text-[#a27b28]">{t('wallet.exactAmount')}</div>
+              <div className="flex items-center justify-center gap-2">
+                <strong className="font-mono text-xl text-[#7a5a1a]">{deposit.expectedAmount}</strong>
+                <CopyButton value={deposit.expectedAmount} />
+              </div>
+            </div>
             <div className="rounded-[14px] border border-[#cfe0bd] bg-tint p-4 text-[11px]">
               <div className="mb-2 flex justify-between"><span className="text-muted">{t('wallet.expiresIn')}</span><strong className="font-mono">{mm}:{ss}</strong></div>
               <div className="mb-2 flex justify-between"><span className="text-muted">{t('wallet.receivingNetwork')}</span><strong>{deposit.networkLabel}</strong></div>
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <span className="shrink-0 text-muted">{t('wallet.exactAmount')}</span>
-                <span className="flex items-center gap-1.5"><strong className="font-mono">{deposit.expectedAmount}</strong><CopyButton value={deposit.expectedAmount} /></span>
-              </div>
               <div className="flex items-center justify-between gap-2">
                 <span className="shrink-0 text-muted">{t('wallet.address')}</span>
                 <span className="flex items-center gap-1.5 overflow-hidden">

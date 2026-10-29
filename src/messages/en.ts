@@ -566,6 +566,6 @@ export const en: Messages = {
     receivingNetwork: 'Receiving network',
     exactAmount: 'Exact amount',
     address: 'Address',
-    warningNote: 'Send on the {network} network with the exact amount above (do not round). Any network/exchange transfer fee is on you and is not included in this amount.',
+    warningNote: 'Important: we identify your transfer ONLY by the exact amount above — send on the {network} network with every digit exact (no rounding, no dropping decimals). If the amount is wrong, the system cannot recognize it and will not credit automatically. Any network/exchange transfer fee is on you and is not included in this amount.',
   },
 };
