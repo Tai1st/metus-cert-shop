@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import AppDownload from './AppDownload';
 import { Use } from './IconSprite';
 import OrderActions from './OrderActions';
 import { Badge, Card, InfoRow, Message } from './ui';
 import { useI18n } from '@/lib/i18n';
 import CopyButton from './CopyButton';
 import { post } from '@/lib/client';
+import type { AppInfo } from '@/lib/api';
 import type { Deposit } from './WalletView';
 
 const POLL_MS = 3000;
@@ -36,7 +38,7 @@ interface Order {
   };
 }
 
-export default function OrderDetailView({ order }: { order: Order }) {
+export default function OrderDetailView({ order, app }: { order: Order; app?: AppInfo | null }) {
   const { t } = useI18n();
   const router = useRouter();
   const pay = order.payment;
@@ -45,6 +47,12 @@ export default function OrderDetailView({ order }: { order: Order }) {
   const active = order.status === 'completed';
   const step = pending ? 1 : active ? 3 : 2;
   const watching = pending || provisioning;
+
+  const steps = [
+    { key: 'pay' as const, label: t('orderDetail.stepPay') },
+    { key: 'cert' as const, label: t('orderDetail.stepReceiveCert') },
+    { key: 'install' as const, label: t('orderDetail.stepInstallApp') },
+  ];
 
   // Khách vừa chuyển khoản/đang chờ cấp chứng chỉ: tự làm mới để không phải F5 tay.
   // "provisioning" còn chủ động kéo trạng thái mới nhất từ nhà cung cấp (webhook có thể chưa tới).
@@ -71,12 +79,12 @@ export default function OrderDetailView({ order }: { order: Order }) {
 
       {order.status !== 'failed' && order.status !== 'cancelled' && (
         <Card className="mb-5 flex items-center gap-3 overflow-auto">
-          {[t('orderDetail.stepPay'), t('orderDetail.stepReceiveCert'), t('orderDetail.stepInstallApp')].map((label, i) => {
+          {steps.map((s, i) => {
             const n = i + 1;
             const done = n < step;
             const current = n === step;
             return (
-              <div key={label} className="flex shrink-0 items-center gap-2.5">
+              <div key={s.key} className="flex shrink-0 items-center gap-2.5">
                 <span className={`flex items-center gap-2.5 text-[10px] ${current ? 'font-semibold text-ink' : done ? 'text-[#709442]' : 'text-[#a2ae96]'}`}>
                   <b
                     className={`grid h-[25px] w-[25px] place-items-center rounded-full text-[9px] font-medium ${
@@ -85,13 +93,19 @@ export default function OrderDetailView({ order }: { order: Order }) {
                   >
                     {done ? '✓' : n}
                   </b>
-                  {label}
+                  {s.label}
                 </span>
                 {i < 2 && <span className="h-px w-8 bg-line" />}
               </div>
             );
           })}
         </Card>
+      )}
+
+      {active && app && (
+        <div className="mb-5">
+          <AppDownload app={app} />
+        </div>
       )}
 
       <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">

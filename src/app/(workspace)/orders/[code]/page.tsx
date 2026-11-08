@@ -1,6 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
 import { be, getMe, type AppInfo } from '@/lib/api';
-import AppDownload from '@/components/AppDownload';
 import OrderDetailView from '@/components/OrderDetailView';
 
 export const dynamic = 'force-dynamic';
@@ -34,12 +33,7 @@ export default async function OrderPage({ params }: PageProps<'/orders/[code]'>)
 
   return (
     <div>
-      <OrderDetailView order={order} />
-      {app?.ok && (
-        <div className="mt-5">
-          <AppDownload app={app.data} />
-        </div>
-      )}
+      <OrderDetailView order={order} app={app?.ok ? app.data : null} />
     </div>
   );
 }

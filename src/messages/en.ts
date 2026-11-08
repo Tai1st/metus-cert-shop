@@ -215,7 +215,7 @@ export const en: Messages = {
     tryAnotherSearch: 'Try a different search term.',
   },
   orderDetail: {
-    finalStep: 'FINAL STEP · INSTALL APP',
+    finalStep: 'INSTALL APP',
     version: 'Version',
     downloadIpa: 'Download app (.ipa)',
     step1: 'Download the certificate (.zip) above and the app (.ipa) here onto the same device.',

@@ -213,7 +213,7 @@ export const vi = {
     tryAnotherSearch: 'Thử từ khóa khác.',
   },
   orderDetail: {
-    finalStep: 'BƯỚC CUỐI · CÀI ỨNG DỤNG',
+    finalStep: 'CÀI ỨNG DỤNG',
     version: 'Phiên bản',
     downloadIpa: 'Tải ứng dụng (.ipa)',
     step1: 'Tải chứng chỉ (.zip) ở trên và ứng dụng (.ipa) ở đây về cùng một thiết bị.',
