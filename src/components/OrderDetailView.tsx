@@ -151,6 +151,10 @@ export default function OrderDetailView({ order, app }: { order: Order; app?: Ap
             <Use id={active ? 'i-check' : pending ? 'i-clock' : 'i-sign'} className="icon h-5 w-5 text-[#88a268]" />
           </div>
 
+          {pending && (
+            <ChangePaymentMethod code={order.code} current={order.paymentMethod ?? 'vietqr'} onChanged={() => router.refresh()} />
+          )}
+
           {pending && order.paymentMethod === 'usdt' && order.usdtPayment && (
             <UsdtOrderPayment code={order.code} info={order.usdtPayment} onCreated={() => router.refresh()} />
           )}
@@ -221,6 +225,57 @@ export default function OrderDetailView({ order, app }: { order: Order; app?: Ap
           </p>
         </Card>
       </div>
+    </div>
+  );
+}
+
+const PAYMENT_METHODS = [
+  { id: 'vietqr', label: 'VietQR' },
+  { id: 'balance', label: 'checkout.methodBalance' },
+  { id: 'usdt', label: 'USDT' },
+  { id: 'paypal', label: 'PayPal' },
+] as const;
+
+/** Đổi phương thức thanh toán của đơn đang chờ — chỉ hiện khi awaiting_payment. */
+function ChangePaymentMethod({
+  code,
+  current,
+  onChanged,
+}: {
+  code: string;
+  current: string;
+  onChanged: () => void;
+}) {
+  const { t } = useI18n();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  async function change(method: string) {
+    if (method === current) return;
+    setBusy(true);
+    setError('');
+    const r = await post(`/orders/${code}/payment-method`, { paymentMethod: method });
+    setBusy(false);
+    if (!r.ok) return setError(r.error);
+    onChanged();
+  }
+
+  return (
+    <div className="mb-4 space-y-2.5 rounded-xl border border-[#cfe0bd] bg-tint p-3.5">
+      <span className="text-[11px] font-semibold">{t('checkout.choosePaymentMethod')}</span>
+      <select
+        value={current}
+        disabled={busy}
+        onChange={(e) => change(e.target.value)}
+        className="w-full rounded-xl border border-[#cfe0bd] bg-white px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-[#4f733d] disabled:opacity-60"
+      >
+        {PAYMENT_METHODS.map((m) => (
+          <option key={m.id} value={m.id}>
+            {m.label.includes('.') ? t(m.label) : m.label}
+          </option>
+        ))}
+      </select>
+      {error && <p role="alert" className="text-[11px] text-[#b45b45]">{error}</p>}
     </div>
   );
 }

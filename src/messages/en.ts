@@ -238,6 +238,7 @@ export const en: Messages = {
     payTitle: 'Bank transfer',
     preparingTitle: 'Preparing certificate',
     noBankConfigured: 'No bank account configured yet.',
+    changePaymentMethod: 'Change payment method',
     paypalAmount: 'Amount to send (USD)',
     paypalEmail: 'PayPal receiving email',
     paypalSendProof: 'Send payment screenshot on Telegram',

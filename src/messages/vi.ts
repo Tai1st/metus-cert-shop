@@ -236,6 +236,7 @@ export const vi = {
     payTitle: 'Thanh toán chuyển khoản',
     preparingTitle: 'Đang chuẩn bị chứng chỉ',
     noBankConfigured: 'Chưa cấu hình tài khoản ngân hàng.',
+    changePaymentMethod: 'Đổi phương thức thanh toán',
     paypalAmount: 'Số tiền cần chuyển (USD)',
     paypalEmail: 'Email PayPal nhận tiền',
     paypalSendProof: 'Gửi ảnh thanh toán qua Telegram',
