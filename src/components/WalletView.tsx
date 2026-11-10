@@ -210,22 +210,21 @@ function DepositModal({
         {!deposit ? (
           <form onSubmit={submit} className="space-y-4">
             <div>
-              <label className="mb-2 block text-[11px] font-semibold">{t('wallet.chooseNetwork')}</label>
-              <div className="grid grid-cols-2 gap-2">
+              <label className="mb-2 block text-[11px] font-semibold" htmlFor="deposit-network">
+                {t('wallet.chooseNetwork')}
+              </label>
+              <select
+                id="deposit-network"
+                value={network}
+                onChange={(e) => setNetwork(e.target.value)}
+                className="w-full rounded-xl border border-[#cfe0bd] bg-tint px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-[#4f733d]"
+              >
                 {info.networks.map((n) => (
-                  <button
-                    key={n.key}
-                    type="button"
-                    onClick={() => setNetwork(n.key)}
-                    className={`rounded-xl border py-2.5 text-center text-xs font-bold ${
-                      network === n.key ? 'border-[#4f733d] bg-mint text-[#20321a]' : 'border-[#cfe0bd] bg-tint text-ink'
-                    }`}
-                  >
-                    {n.label}
-                    <span className="ml-1 text-[9px] font-normal text-muted">{t('wallet.infoFeeUnit', { fee: n.feeUsdt })}</span>
-                  </button>
+                  <option key={n.key} value={n.key}>
+                    {n.label} — {t('wallet.infoFeeUnit', { fee: n.feeUsdt })}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
             <div>
               <label className="mb-2 block text-[11px] font-semibold">{t('wallet.amountLabel')}</label>

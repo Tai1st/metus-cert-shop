@@ -37,7 +37,7 @@ export default function CheckoutModal({
     { id: 'vietqr', label: 'VietQR', on: true },
     { id: 'balance', label: t('checkout.methodBalance'), on: true },
     { id: 'usdt', label: 'USDT', on: true },
-    { id: 'paypal', label: 'PayPal', on: false },
+    { id: 'paypal', label: 'PayPal', on: true },
   ] as const;
   const [method, setMethod] = useState<string>('vietqr');
   const [balanceVnd, setBalanceVnd] = useState<number | null>(null);
@@ -46,6 +46,10 @@ export default function CheckoutModal({
   const [busy, setBusy] = useState(false);
   const next = `/?plan=${encodeURIComponent(plan.id)}`;
   const insufficientBalance = method === 'balance' && balanceVnd !== null && balanceVnd < plan.price;
+
+  // Chỉ dev: gõ tay UDID để xem giao diện, không build lên production (không có token thật nên không đặt được đơn thật).
+  const [testUdid, setTestUdid] = useState('');
+  const effectiveEnroll = enroll ?? (testUdid.trim() ? { token: 'DEV_TEST', udid: testUdid.trim() } : null);
 
   useEffect(() => {
     if (!loggedIn) return;
@@ -143,10 +147,10 @@ export default function CheckoutModal({
           <>
             <div className="mb-4">
               <label className={label}>{t('checkout.yourUdid')}</label>
-              {enroll ? (
+              {effectiveEnroll ? (
                 <div className="flex items-center gap-2 rounded-[14px] border border-[#cfe0bd] bg-tint px-4 py-3">
-                  <div className="min-w-0 flex-1 break-all font-mono text-[11px]">{enroll.udid}</div>
-                  <CopyButton value={enroll.udid} />
+                  <div className="min-w-0 flex-1 break-all font-mono text-[11px]">{effectiveEnroll.udid}</div>
+                  <CopyButton value={effectiveEnroll.udid} />
                 </div>
               ) : (
                 <div className={`${field} text-[#9aa89a]`}>{t('checkout.udidPlaceholder')}</div>
@@ -168,9 +172,17 @@ export default function CheckoutModal({
                   </button>
                 </div>
               )}
-              {enroll && (
+              {!enroll && process.env.NODE_ENV !== 'production' && (
+                <input
+                  value={testUdid}
+                  onChange={(e) => setTestUdid(e.target.value)}
+                  placeholder="DEV: dán UDID bất kỳ để xem giao diện"
+                  className={`${field} mt-2.5 border-dashed border-amber-400 bg-amber-50`}
+                />
+              )}
+              {effectiveEnroll && (
                 <p className="mt-1.5 text-[10px] text-muted">
-                  {[enroll.product, enroll.version && `iOS ${enroll.version}`].filter(Boolean).join(' · ')}
+                  {[effectiveEnroll.product, effectiveEnroll.version && `iOS ${effectiveEnroll.version}`].filter(Boolean).join(' · ')}
                   {' · '}
                   <button type="button" onClick={onGuide} className="text-[#648d42]">
                     {t('checkout.howToGetUdid')}
@@ -238,10 +250,10 @@ export default function CheckoutModal({
 
             <div role="alert" className="mb-2 min-h-3 text-[11px] text-[#b63838]">{error}</div>
             <button
-              disabled={busy || !enroll || insufficientBalance}
+              disabled={busy || !effectiveEnroll || insufficientBalance}
               className="flex w-full items-center justify-center gap-3 rounded-[12px] bg-mint p-3.5 text-xs font-bold text-[#20321a] transition hover:bg-mint-dark disabled:opacity-50"
             >
-              {busy ? t('checkout.creatingOrder') : enroll ? t('checkout.pay') : t('checkout.getUdidToContinue')} <span>→</span>
+              {busy ? t('checkout.creatingOrder') : effectiveEnroll ? t('checkout.pay') : t('checkout.getUdidToContinue')} <span>→</span>
             </button>
             <div className="mt-3 text-center text-[9px] text-[#8a9587]">♧ &nbsp; {t('checkout.noAppleIdRequired')}</div>
           </>

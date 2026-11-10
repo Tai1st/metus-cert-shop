@@ -36,6 +36,11 @@ interface Order {
     networks: { key: string; label: string; feeUsdt: number }[];
     deposit: Deposit | null;
   };
+  paypalPayment?: {
+    email: string;
+    amountUsd: number;
+    note: string;
+  };
 }
 
 export default function OrderDetailView({ order, app }: { order: Order; app?: AppInfo | null }) {
@@ -149,7 +154,36 @@ export default function OrderDetailView({ order, app }: { order: Order; app?: Ap
           {pending && order.paymentMethod === 'usdt' && order.usdtPayment && (
             <UsdtOrderPayment code={order.code} info={order.usdtPayment} onCreated={() => router.refresh()} />
           )}
-          {pending && order.paymentMethod !== 'usdt' && pay && (
+          {pending && order.paymentMethod === 'paypal' && order.paypalPayment && (
+            <div className="space-y-3">
+              <div className="rounded-[14px] border-2 border-[#1e6fd9] bg-[#eef5fe] p-4">
+                <div className="mb-1 text-center text-[9px] font-bold uppercase tracking-wide text-[#1e6fd9]">
+                  {t('orderDetail.paypalAmount')}
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <strong className="font-mono text-xl text-[#13508f]">${order.paypalPayment.amountUsd.toFixed(2)}</strong>
+                  <CopyButton value={String(order.paypalPayment.amountUsd.toFixed(2))} />
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-2 text-[10px]">
+                <span className="shrink-0 text-[#94a086]">{t('orderDetail.paypalEmail')}</span>
+                <span className="flex items-center gap-1.5 overflow-hidden">
+                  <strong className="truncate font-medium text-[#4c6040]">{order.paypalPayment.email}</strong>
+                  <CopyButton value={order.paypalPayment.email} />
+                </span>
+              </div>
+              <a
+                href="https://t.me/metusvn"
+                target="_blank"
+                rel="noreferrer"
+                className="flex w-full items-center justify-center rounded-xl bg-[#1e6fd9] py-3 text-xs font-bold text-white hover:bg-[#1858ad]"
+              >
+                {t('orderDetail.paypalSendProof')}
+              </a>
+              <Message amber>{t('orderDetail.paypalNote')}</Message>
+            </div>
+          )}
+          {pending && order.paymentMethod !== 'usdt' && order.paymentMethod !== 'paypal' && pay && (
             <div className="space-y-3">
               {pay.qrUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -202,12 +236,13 @@ function UsdtOrderPayment({
   onCreated: () => void;
 }) {
   const { t } = useI18n();
-  const [network, setNetwork] = useState(info.networks[0]?.key ?? '');
+  const d = info.deposit;
+  const active = d && d.status === 'pending';
+  const [network, setNetwork] = useState(() => info.networks.find((n) => n.label === d?.networkLabel)?.key ?? info.networks[0]?.key ?? '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [secondsLeft, setSecondsLeft] = useState(0);
-  const d = info.deposit;
-  const active = d && d.status === 'pending';
+  const [changingNetwork, setChangingNetwork] = useState(false);
 
   useEffect(() => {
     if (!active) return;
@@ -217,7 +252,7 @@ function UsdtOrderPayment({
     return () => clearInterval(id);
   }, [active, d]);
 
-  if (!active) {
+  if (!active || changingNetwork) {
     return (
       <div className="space-y-3">
         {info.networks.length === 0 ? (
@@ -225,24 +260,36 @@ function UsdtOrderPayment({
         ) : (
           <>
             <div>
-              <label className="mb-2 block text-[11px] font-semibold">{t('orderDetail.usdtChooseNetwork')}</label>
-              <div className="grid grid-cols-2 gap-2">
+              <label className="mb-2 block text-[11px] font-semibold" htmlFor="usdt-network">
+                {t('orderDetail.usdtChooseNetwork')}
+              </label>
+              <select
+                id="usdt-network"
+                value={network}
+                onChange={(e) => setNetwork(e.target.value)}
+                className="w-full rounded-xl border border-[#cfe0bd] bg-tint px-3.5 py-2.5 text-xs font-bold text-ink outline-none focus:border-[#4f733d]"
+              >
                 {info.networks.map((n) => (
-                  <button
-                    key={n.key}
-                    type="button"
-                    onClick={() => setNetwork(n.key)}
-                    className={`rounded-xl border py-2.5 text-center text-xs font-bold ${
-                      network === n.key ? 'border-[#4f733d] bg-mint text-[#20321a]' : 'border-[#cfe0bd] bg-tint text-ink'
-                    }`}
-                  >
-                    {n.label}
-                    <span className="ml-1 text-[9px] font-normal text-muted">{t('orderDetail.usdtFeeUnit', { fee: n.feeUsdt })}</span>
-                  </button>
+                  <option key={n.key} value={n.key}>
+                    {n.label} — {t('orderDetail.usdtFeeUnit', { fee: n.feeUsdt })}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
             {error && <p role="alert" className="text-[11px] text-[#b45b45]">{error}</p>}
+            {changingNetwork && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  setChangingNetwork(false);
+                  setError('');
+                }}
+                className="w-full rounded-xl border border-line py-2.5 text-xs font-semibold hover:bg-[#f3f6ed]"
+              >
+                {t('common.close')}
+              </button>
+            )}
             <button
               type="button"
               disabled={busy || !network}
@@ -252,6 +299,7 @@ function UsdtOrderPayment({
                 const r = await post(`/orders/${code}/usdt-payment`, { network });
                 setBusy(false);
                 if (!r.ok) return setError(r.error);
+                setChangingNetwork(false);
                 onCreated();
               }}
               className="flex w-full items-center justify-center rounded-xl bg-mint py-3.5 text-xs font-bold text-[#20321a] hover:bg-mint-dark disabled:opacity-50"
@@ -280,7 +328,24 @@ function UsdtOrderPayment({
         </div>
       </div>
       <InfoRow k={t('wallet.expiresIn')} v={`${mm}:${ss}`} mono />
-      <InfoRow k={t('wallet.receivingNetwork')} v={d.networkLabel} />
+      <div className="flex items-center justify-between gap-2 text-[10px]">
+        <span className="text-[#94a086]">{t('wallet.receivingNetwork')}</span>
+        <span className="flex items-center gap-1.5">
+          <strong className="font-medium text-[#4c6040]">{d.networkLabel}</strong>
+          {info.networks.length > 1 && (
+            <button
+              type="button"
+              onClick={() => {
+                setNetwork(info.networks.find((n) => n.label === d.networkLabel)?.key ?? info.networks[0]?.key ?? '');
+                setChangingNetwork(true);
+              }}
+              className="text-[9px] font-semibold text-[#648d42] hover:underline"
+            >
+              {t('orderDetail.usdtChangeNetwork')}
+            </button>
+          )}
+        </span>
+      </div>
       <div className="flex items-center justify-between gap-2 text-[10px]">
         <span className="shrink-0 text-[#94a086]">{t('wallet.address')}</span>
         <span className="flex items-center gap-1.5 overflow-hidden">

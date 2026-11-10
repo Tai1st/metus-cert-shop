@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { post } from '@/lib/client';
 import { useI18n } from '@/lib/i18n';
@@ -73,6 +74,16 @@ export default function AuthForm({ mode, next }: { mode: 'login' | 'register'; n
       <button disabled={loading} className="w-full rounded-[9px] bg-deep py-3 text-xs font-semibold text-white hover:bg-deep-dark disabled:opacity-60">
         {loading ? t('auth.processing') : mode === 'login' ? t('auth.login') : t('auth.createAccount')}
       </button>
+
+      <p className="mt-4 text-center text-[11px] text-muted">
+        {mode === 'login' ? t('auth.noAccountYet') : t('auth.haveAccount')}{' '}
+        <Link
+          href={`${mode === 'login' ? '/register' : '/login'}${next ? `?next=${encodeURIComponent(next)}` : ''}`}
+          className="font-semibold text-ink hover:underline"
+        >
+          {mode === 'login' ? t('auth.goRegister') : t('auth.goLogin')}
+        </Link>
+      </p>
     </form>
   );
 }
